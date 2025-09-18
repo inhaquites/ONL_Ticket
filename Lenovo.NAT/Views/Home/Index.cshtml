@@ -1,0 +1,78 @@
+@using Lenovo.NAT.Infrastructure
+@using Lenovo.NAT.Services.Admin
+@model dynamic
+
+
+@{
+
+    var permissions = (Dictionary<string, string>)ViewBag.Permissions;
+
+    Layout = "_Layout";
+    ViewData["BodyClass"] = "dark-background";
+    ViewData["Title"] = "Home";
+
+    <!-- Cards -->
+    var cards = new[] {
+        new { Title = @"🚚Logistic", Items = new[] { @"📦Picking Request", @"📝ONL Ticket" } }
+    };
+
+    <!-- Routes -->
+    var routes = new Dictionary<string, string>
+    {
+        ["📦Picking Request"] = @Url.Action("Index", "Picking", new { area = "Logistic" })!,
+        ["📝ONL Ticket"] = @Url.Action("Index", "OnlTicket", new { area = "Logistic" })!
+    };
+}
+
+
+<div class="main-content" id="mainContent">
+    <h2 class="text-white mb-4">Welcome to ThinkTool, @User.Identity.Name! 👋</h2>
+    <p class="text-white mb-5">Quickly access Lenovo ThinkTool system modules.</p>
+
+    <div class="row">
+        @foreach (var card in cards)
+        {
+            var cardItemsWithPermission = card.Items
+            .ToList();
+
+            if (cardItemsWithPermission.Any())
+            {
+                var cardId = new string(card.Title
+                .Where(char.IsLetterOrDigit)
+                .ToArray()); // remove espaços, emojis e símbolos
+
+                <div class="col-md-4 mb-4">
+                    <div class="card bg-gradient text-dark shadow-sm card-@cardId">
+                        <div class="card-body">
+                            <h5 class="card-title">@card.Title</h5>
+                            <button class="btn text-dark btn-outline-light btn-sm"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#collapse-@cardId"
+                                    aria-expanded="false"
+                                    aria-controls="collapse-@cardId">
+                                Show options
+                            </button>
+                            <div class="collapse mt-2" id="collapse-@cardId">
+                                <ul class="list-group list-group-flush">
+                                    @foreach (var item in cardItemsWithPermission)
+                                    {
+                                        <li class="list-group-item bg-white text-dark border-0 px-2 py-1">
+                                            @if (routes.ContainsKey(item))
+                                            {
+                                                <a href="@routes[item]" class="text-decoration-none text-dark d-block rounded hover-bg">@item</a>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">@item</span>
+                                            }
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+</div>

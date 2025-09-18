@@ -1,0 +1,41 @@
+﻿@using Lenovo.NAT.ViewModels
+@model SidebarViewModel
+
+<!-- Botão de abrir -->
+<button id="sidebarToggle" class="open-sidebar-button me-3">
+    <i class="bi bi-list"></i>
+</button>
+
+<!-- Overlay -->
+<div id="sidebarOverlay" class="sidebar-overlay"></div>
+    
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+    <span class="close-btn" id="closeSidebar">&times;</span>
+
+    @foreach (var card in Model.Cards)
+    {
+        <div class="menu-section">
+            <button class="menu-button" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar-collapse-@card.Title.GetHashCode()" aria-expanded="false">
+                @card.Title
+            </button>
+            <div class="collapse" id="sidebar-collapse-@card.Title.GetHashCode()">
+                <ul class="submenu">
+                    @foreach (var item in card.Items)
+                    {
+                        <li>
+                            @if (Model.Routes.ContainsKey(item))
+                            {
+                                <a href="@Model.Routes[item]">@item</a>
+                            }
+                            else
+                            {
+                                <span style="color: #888;">@item</span>
+                            }
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    }
+</div>

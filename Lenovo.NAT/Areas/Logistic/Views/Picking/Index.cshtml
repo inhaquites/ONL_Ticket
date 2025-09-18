@@ -1,0 +1,97 @@
+﻿@using Lenovo.NAT.ViewModel.Logistic.Picking
+@model PaginatedPickingViewModel
+
+@{
+    ViewBag.Title = "Picking Request";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<style>
+    .flex-container {
+        display: flex;
+    }
+
+    .flex-input {
+        margin-right: 10px; /* Optional, for spacing between inputs */
+    }
+
+    #file{
+        width: 400px
+    }
+
+    #uploadTracking{
+        width: 200px
+    }
+</style>
+
+<h3>Picking Request</h3>
+<hr />
+
+@if (!string.IsNullOrEmpty(ViewBag.Alert))
+{
+    <div class="alert alert-danger d-flex align-items-center" role="alert">
+        <div>
+            @ViewBag.Alert
+        </div>
+    </div>
+}
+
+@if (Model.FilterInfo.IsAdmin)
+{
+    @using (Html.BeginForm("UploadFile", "Picking", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+
+        <p>
+            <strong>
+                Upload Tracking
+            </strong>
+        </p>
+        <div class="flex-container">
+
+            @Html.TextBox("file", "", new { type = "file", @class = "form-control flex-input", @id = "file" })
+            <input type="submit" value="Upload file" class="btn btn-primary form-control flex-input" id="uploadTracking" />
+        </div>
+    }
+
+    <hr />
+}
+
+<partial name="_filter" for="FilterInfo" />
+
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th scope="col">Status</th>
+            <th scope="col">Area</th>
+            <th scope="col">Process Type</th>
+            <th scope="col">Client</th>
+            <th scope="col">Process</th>
+            <th scope="col">Carrier</th>
+            <th scope="col">Created On</th>
+            <th scope="col">Validation Date</th>
+            <th scope="col">Created By</th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    @if (Model != null && Model.Pickings.Any())
+    {
+        foreach (var item in Model.Pickings)
+        {
+            <tr>
+                <td>@item.PickingStatus</td>
+                <td>@item.Area</td>
+                <td>@item.ProcessType</td>
+                <td>@item.Client</td>
+                <td>@item.Process</td>
+                <td>@item.CarrierName</td>
+                <td>@item.CreatedOn</td>
+                <td>@item.UpdatedOn</td>
+                <td>@item.CreatedBy</td>
+                <td><font size="2" face="Arial">@Html.ActionLink("Details", "Detail", "Picking", new { id = item.Id })</font></td>
+            </tr>
+        }
+    }
+</table>
+
+<partial name="_pagination" for="FilterInfo" />

@@ -1,0 +1,123 @@
+@using Lenovo.NAT.ViewModel.Logistic.OnlTicket
+@model OnlTicketFilter
+
+<style>
+    .form-group label {
+        margin-bottom: 8px;
+        display: block;
+    }
+</style>
+
+@using (Html.BeginForm("Index", "OnlTicket", FormMethod.Get))
+{
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Filtros</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="LogNumber">Log Number</label>
+                        @Html.TextBoxFor(model => model.LogNumber, new { @class = "form-control", @placeholder = "Enter log number" })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="Customer">Customer</label>
+                        @Html.DropDownListFor(model => model.Customer, Model.Customers.Select(item => new SelectListItem
+                        {
+                            Value = item,
+                            Text = item
+                        }), "Select Customer", new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="SegmentId">Segment</label>
+                        @Html.DropDownListFor(model => model.SegmentId, Model.CustomerSegments.Select(item => new SelectListItem
+                        {
+                            Value = item.Id.ToString(),
+                            Text = item.Name
+                        }), "Select Segment", new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="OrderType">Order Type</label>
+                        @Html.DropDownListFor(model => model.OrderType, Model.OrderTypes.Select(item => new SelectListItem
+                        {
+                            Value = item.Id.ToString(),
+                            Text = item.Name
+                        }), "Select Order Type", new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="AssignTo">Assign To</label>
+                        @Html.DropDownListFor(model => model.AssignTo, Model.AssignToUsers.Select(item => new SelectListItem
+                        {
+                            Value = item,
+                            Text = item
+                        }), "Select Assign To", new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="AgingBucket">Aging Bucket</label>
+                        @Html.DropDownListFor(model => model.AgingBucket, Model.AgingBuckets.Select(item => new SelectListItem
+                        {
+                            Value = item,
+                            Text = item
+                        }), "Select Aging Bucket", new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="CreatedAt">Created At</label>
+                        <input class="form-control" asp-for="CreatedAt" asp-format="{0:dd/MM/yyyy}" type="date" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="CreatedBy">Created By</label>
+                        @Html.DropDownListFor(model => model.CreatedBy, Model.CreatedByUsers.Select(item => new SelectListItem
+                        {
+                            Value = item,
+                            Text = item
+                        }), "Select Created By", new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="Status">Status</label>
+                        @Html.DropDownListFor(model => model.Status, Model.Statuses.Select(item => new SelectListItem
+                        {
+                            Value = item,
+                            Text = item
+                        }), "Select Status", new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="SAPOrder">SAP Order</label>
+                        @Html.TextBoxFor(model => model.SAPOrder, new { @class = "form-control", @placeholder = "Enter SAP Order" })
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group" style="text-align: right; padding-top: 25px;">
+                        <button type="submit" class="btn btn-primary" asp-area="Logistic" asp-controller="OnlTicket" asp-action="Index" asp-route-pageSize="@Model.PageSize">
+                            Search
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

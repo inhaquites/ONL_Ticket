@@ -1,0 +1,217 @@
+@using Lenovo.NAT.ViewModel.Logistic.OnlTicket
+@model PaginatedOnlTicketViewModel
+
+@{
+    ViewBag.Title = "ONL Ticket";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .count-section {
+        background-color: #f8f9fa;
+        padding: 25px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    
+    .count-items-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 40px;
+    }
+    
+    .count-item {
+        text-align: center;
+        min-width: 80px;
+    }
+    
+    .count-number {
+        font-size: 32px;
+        font-weight: bold;
+        color: #007bff;
+        line-height: 1;
+        margin-bottom: 8px;
+        display: block;
+    }
+    
+    .count-label {
+        font-size: 14px;
+        color: #6c757d;
+        font-weight: normal;
+        line-height: 1.2;
+        display: block;
+        margin-bottom: 5px;
+    }
+    
+    .action-buttons {
+        margin-bottom: 20px;
+    }
+    
+    .action-btn {
+        margin-right: 10px;
+        margin-bottom: 10px;
+    }
+    
+    .table th {
+        background-color: #f8f9fa;
+        font-weight: bold;
+    }
+    
+    .table td {
+        vertical-align: middle;
+    }
+    
+    .action-buttons-row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+    
+    .action-buttons-row .btn {
+        font-size: 12px;
+        padding: 5px 10px;
+    }
+</style>
+
+<h3>ONL Ticket</h3>
+<hr />
+
+@if (!string.IsNullOrEmpty(ViewBag.Alert))
+{
+    <div class="alert alert-danger d-flex align-items-center" role="alert">
+        <div>
+            @ViewBag.Alert
+        </div>
+    </div>
+}
+
+<!-- Count Section -->
+<div class="count-section">
+    <h3 style="margin-bottom: 25px; font-weight: bold; font-size: 24px;">Count</h3>
+    <div class="count-items-container">
+        <div class="count-item">
+            <span class="count-label">Qty LOG NEW</span>
+            <span class="count-number">@Model.NewCount</span>            
+        </div>
+        <div class="count-item">
+            <span class="count-label">Qty LOG Approved</span>
+            <span class="count-number">@Model.ApprovedCount</span>
+        </div>
+        <div class="count-item">
+            <span class="count-label">Qty LOG Canceled / Not PO</span>
+            <span class="count-number">@Model.CanceledNotPOCount</span>
+        </div>
+        <div class="count-item">
+            <span class="count-label">Qty LOG Reject</span>
+            <span class="count-number">@Model.RejectCount</span>
+        </div>
+        <div class="count-item">
+            <span class="count-label">Qty LOG Without Assign</span>
+            <span class="count-number">@Model.WithoutAssignCount</span>
+        </div>
+        <div class="count-item">
+            <span class="count-label">Qty LOG Without SAP Order</span>
+            <span class="count-number">@Model.WithoutSAPOrderCount</span>
+        </div>
+    </div>
+</div>
+
+<!-- Filters Area -->
+<partial name="_filter" for="FilterInfo" />
+
+<!-- Action Buttons -->
+<div class="action-buttons" style="text-align: right; margin-top: 10px; margin-bottom: 20px;">    
+    <button class="btn btn-primary action-btn">Upload</button>
+    <button class="btn btn-secondary action-btn">Admin Download</button>
+    <button class="btn btn-warning action-btn">Download</button>
+    <button class="btn btn-success action-btn" onclick="location.href='@Url.Action("Create", "OnlTicket")'">Create</button>
+</div>
+
+<!-- Data Table -->
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th scope="col" style="width: 30px;">
+                <input type="checkbox" id="selectAll" />
+            </th>
+            <th scope="col">Log number</th>
+            <th scope="col">Customer</th>
+            <th scope="col">Segment</th>
+            <th scope="col">Assign to</th>
+            <th scope="col">Order Aging</th>
+            <th scope="col">Aging bucket</th>
+            <th scope="col">SAP Order</th>
+            <th scope="col">Total CAs</th>
+            <th scope="col">Create at</th>
+            <th scope="col">Created by</th>
+            <th scope="col">Email from</th>
+            <th scope="col">Updated at</th>
+            <th scope="col">Status</th>
+            <th scope="col">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.OnlTickets.Any())
+        {
+            foreach (var item in Model.OnlTickets)
+            {
+                <tr>
+                    <td>
+                        <input type="checkbox" class="row-checkbox" value="@item.Id" />
+                    </td>
+                    <td>@item.LogNumber</td>
+                    <td>@item.Customer</td>
+                    <td>@item.Segment</td>
+                    <td>@item.AssignTo</td>
+                    <td>@item.OrderAging</td>
+                    <td>@item.AgingBucket</td>
+                    <td>@item.SAPOrder</td>
+                    <td>@item.TotalCAs</td>
+                    <td>@item.CreatedAt?.ToString("dd/MM/yyyy")</td>
+                    <td>@item.CreatedBy</td>
+                    <td>@item.EmailFrom</td>
+                    <td>@item.UpdatedAt?.ToString("dd/MM/yyyy")</td>
+                    <td>
+                        <span class="badge badge-@(item.Status?.ToLower() switch {
+                            "new" => "primary",
+                            "approved" => "success", 
+                            "reject" => "danger",
+                            "canceled" => "secondary",
+                            _ => "light"
+                        })">@item.Status</span>
+                    </td>
+                    <td>
+                        <div class="action-buttons-row">
+                            <button class="btn btn-info btn-sm" onclick="location.href='@Url.Action("Details", "OnlTicket", new { id = item.Id })'">Details</button>
+                            <button class="btn btn-warning btn-sm" onclick="location.href='@Url.Action("Duplicate", "OnlTicket", new { id = item.Id })'">Duplicate</button>
+                        </div>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="15" class="text-center">No records found</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Pagination -->
+<partial name="_pagination" for="FilterInfo" />
+
+
+<script>
+    // Select All functionality
+    document.getElementById('selectAll').addEventListener('change', function() {
+        const checkboxes = document.querySelectorAll('.row-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = this.checked;
+        });
+    });
+
+</script>

@@ -1,0 +1,76 @@
+﻿html,
+body {
+    background-color: #1d2033;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+}
+
+.login-container {
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+    .login-container img {
+        width: 180px;
+        margin-bottom: 20px;
+    }
+
+    .login-container .title {
+        color: #e1140a;
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+    }
+
+.form-control[readonly] {
+    background-color: #e9ecef;
+    color: #495057;
+}
+
+.btn-login {
+    background-color: #0d6efd;
+    color: white;
+    font-weight: 500;
+    border-radius: 8px;
+    padding: 10px 0;
+    margin-top: 20px;
+}
+
+    .btn-login:hover {
+        background-color: #084ec1;
+    }
+
+.footer {
+    font-size: 0.875rem;
+    color: #808080;
+    margin-top: 30px;
+}
+
+.form-signin {
+    max-width: 330px;
+    padding: 15px;
+}
+
+    .form-signin .form-floating:focus-within {
+        z-index: 2;
+    }
+
+    .form-signin input[type="email"] {
+        margin-bottom: -1px;
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+
+    .form-signin input[type="password"] {
+        margin-bottom: 10px;
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+    }

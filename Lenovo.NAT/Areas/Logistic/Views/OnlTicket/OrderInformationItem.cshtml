@@ -1,0 +1,266 @@
+@model Lenovo.NAT.ViewModel.Logistic.OnlTicket.OnlTicketViewModel
+@using Lenovo.NAT.ViewModel.Logistic.OnlTicket
+
+    <div class="card" style="margin-bottom:10px">
+        <h5 class="card-header" data-bs-toggle="collapse" href="#collapseOrderItem" role="button" aria-expanded="true" aria-controls="collapseOrderItem">Order Information - Item</h5>
+        <div class="no-padding accordion-collapse collapse show" id="collapseOrderItem">
+            <!-- ID Field - Hidden -->
+            @Html.HiddenFor(model => model.ID)
+
+            <!-- Add Sold To Button -->
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <button type="button" class="btn btn-primary btn-sm" id="addSoldTo">
+                            <i class="fas fa-plus"></i> Add Sold To
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sold To Addresses Container -->
+            <div id="soldToContainer">
+                @if (Model.SoldToAddresses != null && Model.SoldToAddresses.Any())
+                {
+                    for (int i = 0; i < Model.SoldToAddresses.Count; i++)
+                    {
+                        <div class="card sold-to-card" style="margin-bottom:10px" data-soldto-index="@i" data-original="true">
+                            <div class="card-header" data-bs-toggle="collapse" href="#collapseSoldTo@(i)" role="button" aria-expanded="true" aria-controls="collapseSoldTo@(i)">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-0"><strong>Sold To@(!string.IsNullOrEmpty(Model.SoldToAddresses[i].CNPJ) ? " - " + Model.SoldToAddresses[i].CNPJ : "")</strong></h6>
+                                    <button type="button" class="btn btn-danger btn-sm remove-sold-to" data-soldto-index="@i" title="Remove Sold To">
+                                        <i class="fas fa-trash"></i> Remove
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="collapse show" id="collapseSoldTo@(i)">
+                                <div class="card-body sold-to-section">
+                                    <!-- Sold To Address Fields -->
+                <div class="row">
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                                                <p><strong>Sold To - CNPJ</strong></p>
+                                                @Html.EditorFor(model => model.SoldToAddresses[i].CNPJ, new { htmlAttributes = new { @class = "form-control", @id = $"soldToAddresses_{i}__CNPJ", @name = $"SoldToAddresses[{i}].CNPJ" } })
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                                                <p><strong>Endereço</strong></p>
+                                                @Html.EditorFor(model => model.SoldToAddresses[i].Address, new { htmlAttributes = new { @class = "form-control", @id = $"soldToAddresses_{i}__Address", @name = $"SoldToAddresses[{i}].Address" } })
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                                                <p><strong>Bairro</strong></p>
+                                                @Html.EditorFor(model => model.SoldToAddresses[i].Neighborhood, new { htmlAttributes = new { @class = "form-control", @id = $"soldToAddresses_{i}__Neighborhood", @name = $"SoldToAddresses[{i}].Neighborhood" } })
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                                                <p><strong>Município</strong></p>
+                                                @Html.EditorFor(model => model.SoldToAddresses[i].City, new { htmlAttributes = new { @class = "form-control", @id = $"soldToAddresses_{i}__City", @name = $"SoldToAddresses[{i}].City" } })
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                                                <p><strong>CEP</strong></p>
+                                                @Html.EditorFor(model => model.SoldToAddresses[i].PostalCode, new { htmlAttributes = new { @class = "form-control", @id = $"soldToAddresses_{i}__PostalCode", @name = $"SoldToAddresses[{i}].PostalCode" } })
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                                                <p><strong>UF</strong></p>
+                                                @Html.EditorFor(model => model.SoldToAddresses[i].State, new { htmlAttributes = new { @class = "form-control", @id = $"soldToAddresses_{i}__State", @name = $"SoldToAddresses[{i}].State" } })
+                    </div>
+                </div>
+            </div>
+
+                                    <!-- Add Ship To Button for this Sold To -->
+                                    <div class="row mt-3">
+                    <div class="col-sm-12">
+                                            <button type="button" class="btn btn-success btn-sm add-ship-to" data-soldto-index="@i">
+                            <i class="fas fa-plus"></i> Add Ship To
+                        </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Ship To Addresses Container for this Sold To -->
+                                    <div class="ship-to-container mt-3" data-soldto-index="@i">
+                                        @if (Model.SoldToAddresses[i].ShipToAddresses != null && Model.SoldToAddresses[i].ShipToAddresses.Any())
+                                        {
+                                            for (int j = 0; j < Model.SoldToAddresses[i].ShipToAddresses.Count; j++)
+                                            {
+                                                <div class="card ship-to-card" style="margin-bottom:10px" data-soldto-index="@i" data-shipto-index="@j">
+                                                    <div class="card-header" data-bs-toggle="collapse" href="#collapseShipTo@(i)_@(j)" role="button" aria-expanded="true" aria-controls="collapseShipTo@(i)_@(j)">
+                                                        <div class="d-flex justify-content-between align-items-center">
+                                                            <h6 class="mb-0"><strong>Ship To@(!string.IsNullOrEmpty(Model.SoldToAddresses[i].ShipToAddresses[j].CNPJ) ? " - " + Model.SoldToAddresses[i].ShipToAddresses[j].CNPJ : "")</strong></h6>
+                                                            <button type="button" class="btn btn-danger btn-sm remove-ship-to" data-soldto-index="@i" data-shipto-index="@j" title="Remove Ship To">
+                                                                <i class="fas fa-trash"></i> Remove
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="collapse show" id="collapseShipTo@(i)_@(j)">
+                                                        <div class="card-body ship-to-section">
+                                                            <!-- Ship To Address Fields -->
+                                                            <div class="row">
+                                                                <div class="col-sm-2">
+                                                                    <div class="form-group">
+                                                                        <p><strong>Ship To - CNPJ</strong></p>
+                                                                        @Html.EditorFor(model => model.SoldToAddresses[i].ShipToAddresses[j].CNPJ, new { htmlAttributes = new { @class = "form-control", @id = $"soldToAddresses_{i}__ShipToAddresses_{j}__CNPJ", @name = $"SoldToAddresses[{i}].ShipToAddresses[{j}].CNPJ" } })
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-sm-2">
+                                                                    <div class="form-group">
+                                                                        <p><strong>Endereço</strong></p>
+                                                                        @Html.EditorFor(model => model.SoldToAddresses[i].ShipToAddresses[j].Address, new { htmlAttributes = new { @class = "form-control", @id = $"soldToAddresses_{i}__ShipToAddresses_{j}__Address", @name = $"SoldToAddresses[{i}].ShipToAddresses[{j}].Address" } })
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-sm-2">
+                                                                    <div class="form-group">
+                                                                        <p><strong>Bairro</strong></p>
+                                                                        @Html.EditorFor(model => model.SoldToAddresses[i].ShipToAddresses[j].Neighborhood, new { htmlAttributes = new { @class = "form-control", @id = $"soldToAddresses_{i}__ShipToAddresses_{j}__Neighborhood", @name = $"SoldToAddresses[{i}].ShipToAddresses[{j}].Neighborhood" } })
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-sm-2">
+                                                                    <div class="form-group">
+                                                                        <p><strong>Município</strong></p>
+                                                                        @Html.EditorFor(model => model.SoldToAddresses[i].ShipToAddresses[j].City, new { htmlAttributes = new { @class = "form-control", @id = $"soldToAddresses_{i}__ShipToAddresses_{j}__City", @name = $"SoldToAddresses[{i}].ShipToAddresses[{j}].City" } })
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-sm-2">
+                                                                    <div class="form-group">
+                                                                        <p><strong>CEP</strong></p>
+                                                                        @Html.EditorFor(model => model.SoldToAddresses[i].ShipToAddresses[j].PostalCode, new { htmlAttributes = new { @class = "form-control", @id = $"soldToAddresses_{i}__ShipToAddresses_{j}__PostalCode", @name = $"SoldToAddresses[{i}].ShipToAddresses[{j}].PostalCode" } })
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-sm-2">
+                                                                    <div class="form-group">
+                                                                        <p><strong>UF</strong></p>
+                                                                        @Html.EditorFor(model => model.SoldToAddresses[i].ShipToAddresses[j].State, new { htmlAttributes = new { @class = "form-control", @id = $"soldToAddresses_{i}__ShipToAddresses_{j}__State", @name = $"SoldToAddresses[{i}].ShipToAddresses[{j}].State" } })
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <!-- SAP Order Number -->
+                                                            <div class="row">
+                                                                <div class="col-sm-3">
+                                                                    <div class="form-group">
+                                                                        <p><strong>SAP Order Number</strong></p>
+                                                                        @Html.EditorFor(model => model.SoldToAddresses[i].ShipToAddresses[j].SAPOrderNumber, new { htmlAttributes = new { @class = "form-control", @id = $"soldToAddresses_{i}__ShipToAddresses_{j}__SAPOrderNumber", @name = $"SoldToAddresses[{i}].ShipToAddresses[{j}].SAPOrderNumber" } })
+                    </div>
+                </div>
+            </div>
+
+                                                            <!-- Order Items Section -->
+                                                            <div class="card" style="margin-top:10px">
+                                                                <div class="card-header">
+                                                                    <div class="d-flex justify-content-between align-items-center">
+                                                                        <h6 class="mb-0"><strong>Order Items</strong></h6>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="card-body">
+                                                                    <!-- Order Item Input Fields -->
+                                                                    <div class="row order-item-input-row">
+                                                                        <div class="col-sm-2">
+                                                                            <div class="form-group">
+                                                                                <p><strong>Bid / Contract Number</strong></p>
+                                                                                <input class="form-control order-item-input" id="orderItemBidContractNumber_@(i)_@(j)" type="text" value="">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-sm-2">
+                                                                            <div class="form-group">
+                                                                                <p><strong>Part Number</strong></p>
+                                                                                <input class="form-control order-item-input" id="orderItemPartNumber_@(i)_@(j)" type="text" value="">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-sm-2">
+                                                                            <div class="form-group">
+                                                                                <p><strong>Part Number Description</strong></p>
+                                                                                <input class="form-control order-item-input" id="orderItemPartNumberDescription_@(i)_@(j)" type="text" value="">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-sm-1">
+                                                                            <div class="form-group">
+                                                                                <p><strong>Qty</strong></p>
+                                                                                <input class="form-control order-item-input" id="orderItemQty_@(i)_@(j)" type="number" value="">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-sm-2">
+                                                                            <div class="form-group">
+                                                                                <p><strong>Unity NET Price</strong></p>
+                                                                                <input class="form-control order-item-input" id="orderItemUnityNetPrice_@(i)_@(j)" type="number" step="0.01" value="">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-sm-2">
+                                                                            <div class="form-group">
+                                                                                <p><strong>Unit Gross Price</strong></p>
+                                                                                <input class="form-control order-item-input" id="orderItemUnitGrossPrice_@(i)_@(j)" type="number" step="0.01" value="">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-sm-1">
+                                                                            <div class="form-group">
+                                                                                <p><strong>&nbsp;</strong></p>
+                                                                                <button type="button" class="btn btn-primary btn-sm add-order-item-btn" data-soldto-index="@i" data-shipto-index="@j">
+                                                                                    <i class="fas fa-plus"></i> Add Order Item
+                                                                                </button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    
+                                                                    <!-- Order Items Table -->
+                                                                    <div class="mt-3">
+                                                                        <table class="table table-striped order-items-table" data-soldto-index="@i" data-shipto-index="@j">
+                                                                            <thead class="table-dark">
+                                                                                <tr>
+                                                                                    <th>Bid / Contract Number</th>
+                                                                                    <th>Part Number</th>
+                                                                                    <th>Part Number Description</th>
+                                                                                    <th>Qty</th>
+                                                                                    <th>Unity NET Price</th>
+                                                                                    <th>Unit Gross Price</th>
+                                                                                    <th>Actions</th>
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <tbody class="order-items-table-body">
+                                                                                @if (Model.SoldToAddresses[i].ShipToAddresses[j].OrderItems != null && Model.SoldToAddresses[i].ShipToAddresses[j].OrderItems.Any())
+                                                                                {
+                                                                                    for (int k = 0; k < Model.SoldToAddresses[i].ShipToAddresses[j].OrderItems.Count; k++)
+                                                                                    {
+                                                                                        <tr data-item-index="@k">
+                                                                                            <td>@Model.SoldToAddresses[i].ShipToAddresses[j].OrderItems[k].BidContractNumber</td>
+                                                                                            <td>@Model.SoldToAddresses[i].ShipToAddresses[j].OrderItems[k].PartNumber</td>
+                                                                                            <td>@Model.SoldToAddresses[i].ShipToAddresses[j].OrderItems[k].PartNumberDescription</td>
+                                                                                            <td>@Model.SoldToAddresses[i].ShipToAddresses[j].OrderItems[k].Qty</td>
+                                                                                            <td>@Model.SoldToAddresses[i].ShipToAddresses[j].OrderItems[k].UnityNetPrice</td>
+                                                                                            <td>@Model.SoldToAddresses[i].ShipToAddresses[j].OrderItems[k].UnitGrossPrice</td>
+                                                                                            <td>
+                                                                                                <button type="button" class="btn btn-info btn-sm edit-order-item" data-soldto-index="@i" data-shipto-index="@j" data-item-index="@k" title="Edit Order Item">
+                                                                                                    <i class="fas fa-edit"></i> Edit
+                                                                                                </button>
+                                                                                                <button type="button" class="btn btn-danger btn-sm remove-order-item" data-soldto-index="@i" data-shipto-index="@j" data-item-index="@k" title="Remove Order Item">
+                                                                                                    <i class="fas fa-trash"></i> Remove
+                                                                                                </button>
+                                                                                            </td>
+                                                                                        </tr>
+                                                                                    }
+                                                                                }
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                <!-- Sold To sections will be added dynamically here -->
+            </div>
+        </div>
+    </div>

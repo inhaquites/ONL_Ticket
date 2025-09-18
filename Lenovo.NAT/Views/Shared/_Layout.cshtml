@@ -1,0 +1,125 @@
+﻿@using Lenovo.NAT.Infrastructure;
+@using Lenovo.NAT.Services.Admin;
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
+@using Newtonsoft.Json;
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Lenovo ThinkTool</title>
+    <link rel="shortcut icon" href="~/content/Images/Lenovo-favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Lenovo.NAT.styles.css" asp-append-version="true" />
+    <link href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+
+    <style>
+        .container-fluid {
+            /*height: max-content;*/
+            border-bottom: 20px;
+            height: fit-content;
+        }
+
+        .navbar-brand {
+            margin-left: 0; /* Ajuste fino */
+            justify-content: flex-start;
+            font-size: 1.2rem;
+        }
+
+        .pb-3 {
+            height: max-content;
+            border-bottom: 20px;
+        }
+
+        .container {
+            margin-left: 20px !important;
+        }
+
+        .footer {
+            position: relative !important;
+            margin-bottom: 10px !important;
+            width: 100%; 
+            text-align: center;
+        }
+    </style>
+</head>
+<body class="@ViewData["BodyClass"]">
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-light border-bottom box-shadow mb-3" style="background-color: #e1140a;">
+            <div class="container-fluid d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-3">
+                    @{
+                        var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+                        var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+                        var showSidebar = !(currentController == "Home" && currentAction == "Index");
+                    }
+                    <div class="d-flex align-items-center">
+                    @if (showSidebar)
+                    {
+                        @await Component.InvokeAsync("Sidebar")
+                    }
+                    <a class="navbar-brand text-white"  asp-area="" asp-controller="Home" asp-action="Index">Lenovo ThinkTool</a>
+                    </div>
+                </div>
+                <div class="icon-group d-flex ">
+                    @if (showSidebar)
+                    {
+                        <button class="btn btn-outline-light theme-toggle" id="toggleTheme">
+                            <i class="bi bi-moon"></i>
+                        </button>
+                    }
+                    <div class="dropdown">
+                        <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person user-icon" role="button" data-bs-toggle="dropdown" aria-expanded="false"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow rounded border-0 animate__animated animate__fadeIn" aria-labelledby="userDropdown" style="min-width: 220px;">
+                            <li class="px-3 pt-3 pb-1">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-person-fill text-primary me-2 fs-4"></i>
+                                    <div>
+                                        <div class="fw-semibold">@User.Identity.Name</div>
+                                        <small class="text-muted">Logged in</small>
+                                    </div>
+                                </div>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" asp-area="Signin" asp-controller="Signin" asp-action="Index">
+                                    <i class="bi bi-box-arrow-right text-danger me-2"></i> Logout
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+    
+    <div class="container-fluid">
+        @RenderBody()
+    </div>
+
+    <footer class="footer w-100">
+        <div class="text-center text-muted">
+            Copyright Lenovo @DateTime.UtcNow.AddHours(-3).Year
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.7.6/lottie.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/sidebar.js" asp-append-version="true"></script>
+    <script src="~/js/darkmode.js" asp-append-version="true"></script>
+   
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

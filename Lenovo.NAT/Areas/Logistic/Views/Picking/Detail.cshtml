@@ -1,0 +1,1739 @@
+﻿@using Lenovo.NAT.ViewModel.Logistic.Picking
+@model PickingViewModel
+@{
+    ViewData["Title"] = "Picking Request Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3>Picking Request Detail</h3>
+<hr />
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+
+@if (!string.IsNullOrEmpty(ViewBag.Alert))
+{
+    <div class="alert">
+        <span id="idAlert" style="display: none; " class="closebtn" onclick="this.parentElement.style.display='none';"></span>
+    </div>
+}
+
+@Html.HiddenFor(model => model.Id)
+
+<div class="alert">
+    <span id="idAlert" style="display: none; background: red" class="closebtn" onclick="this.parentElement.style.display='none';"></span>
+</div>
+
+<div class="card" style="margin-bottom:10px">
+    <h5 class="card-header" data-bs-toggle="collapse" href="#collapseOne" role="button" aria-expanded="true" aria-controls="collapseOne">Picking Details</h5>
+    <div class="no-padding accordion-collapse collapse show" id="collapseOne">
+
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <p>
+                            <strong>
+                                Created On
+                            </strong>
+                        </p>
+                        @Html.EditorFor(model => model.CreatedOn, new { htmlAttributes = new { @readonly = true, @class = "form-control" } })
+                    </div>
+                </div>
+
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <p>
+                            <strong>
+                                Created By
+                            </strong>
+                        </p>
+                        @Html.EditorFor(model => model.CreatedBy, new { htmlAttributes = new { @readonly = true, @class = "form-control", @id = "createdBy" } })
+                    </div>
+                </div>
+
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <p>
+                            <strong>
+                                Status
+                            </strong>
+                        </p>
+                        @Html.HiddenFor(model => model.IdPickingStatus, new { htmlAttributes = new { @readonly = true, @class = "form-control", @id = "idPickingStatus" } })
+                        @Html.EditorFor(model => model.PickingStatus, new { htmlAttributes = new { @readonly = true, @class = "form-control" } })
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <p>
+                            <strong>
+                                Responsible Area
+                            </strong>
+                        </p>
+                        @if (Model.UserCanChangeHeaderInformation)
+                        {
+                            @Html.DropDownListFor(model => model.IdPickingArea, Model.Areas.Select(item => new SelectListItem
+                   {
+                       Value = item.Id.ToString(),
+                       Text = item.Name
+                   }), "Select", new { @class = "form-control", @id = "IdArea" })
+                        }
+                        else
+                        {
+                            @Html.EditorFor(model => model.Area, new { htmlAttributes = new { @readonly = true, @class = "form-control", @id = "IdArea" } })
+                        }
+                    </div>
+                </div>
+
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <p>
+                            <strong>
+                                Process Type
+                            </strong>
+                        </p>
+                        @if (Model.UserCanChangeHeaderInformation)
+                        {
+                            @Html.DropDownListFor(model => model.IdPickingProcessType, Model.ProcessTypes.Select(item => new SelectListItem
+                   {
+                       Value = item.Id.ToString(),
+                       Text = item.Name
+                   }), "Select", new { @class = "form-control", @id = "IdProcessType" })
+                        }
+                        else
+                        {
+                            @Html.EditorFor(model => model.ProcessType, new { htmlAttributes = new { @readonly = true, @class = "form-control", @id = "IdProcessType" } })
+                        }
+                    </div>
+                </div>
+
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <p>
+                            <strong>
+                                Process Number
+                            </strong>
+                        </p>
+                        @Html.EditorFor(model => model.Process, new { htmlAttributes = new { @readonly = true, @class = "form-control" } })
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <p>
+                            <strong>
+                                Client
+                            </strong>
+                        </p>
+                        @if (Model.UserCanChangeHeaderInformation)
+                        {
+                            @Html.EditorFor(model => model.Client, new { htmlAttributes = new { @class = "form-control", @id = "client" } })
+                        }
+                        else
+                        {
+                            @Html.EditorFor(model => model.Client, new { htmlAttributes = new { @readonly = true, @class = "form-control", @id = "client" } })
+                        }
+                    </div>
+                </div>
+
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <p>
+                            <strong>
+                                City
+                            </strong>
+                        </p>
+                        @if (Model.UserCanChangeHeaderInformation)
+                        {
+                            @Html.EditorFor(model => model.City, new { htmlAttributes = new { @class = "form-control", @id = "city" } })
+                        }
+                        else
+                        {
+                            @Html.EditorFor(model => model.City, new { htmlAttributes = new { @readonly = true, @class = "form-control", @id = "city" } })
+                        }
+                    </div>
+                </div>
+
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <p>
+                            <strong>
+                                UF
+                            </strong>
+                        </p>
+                        @if (Model.UserCanChangeHeaderInformation)
+                        {
+                            @Html.EditorFor(model => model.UF, new { htmlAttributes = new { @class = "form-control", @id = "uf" } })
+                        }
+                        else
+                        {
+                            @Html.EditorFor(model => model.UF, new { htmlAttributes = new { @readonly = true, @class = "form-control", @id = "uf" } })
+                        }
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <p>
+                            <strong>
+                                Contact
+                            </strong>
+                        </p>
+                        @if (Model.UserCanChangeHeaderInformation)
+                        {
+                            @Html.EditorFor(model => model.Contact, new { htmlAttributes = new { @class = "form-control", @id = "contact" } })
+                        }
+                        else
+                        {
+                            @Html.EditorFor(model => model.Contact, new { htmlAttributes = new { @readonly = true, @class = "form-control", @id = "contact" } })
+                        }
+                    </div>
+                </div>
+
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <p>
+                            <strong>
+                                Email
+                            </strong>
+                        </p>
+                        @if (Model.UserCanChangeHeaderInformation)
+                        {
+                            @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", @id = "email" } })
+                        }
+                        else
+                        {
+                            @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @readonly = true, @class = "form-control", @id = "email" } })
+                        }
+                    </div>
+                </div>
+
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <p>
+                            <strong>
+                                Telephone
+                            </strong>
+                        </p>
+                        @if (Model.UserCanChangeHeaderInformation)
+                        {
+                            @Html.EditorFor(model => model.Telephone, new { htmlAttributes = new { @class = "form-control", @id = "telephone" } })
+                        }
+                        else
+                        {
+                            @Html.EditorFor(model => model.Telephone, new { htmlAttributes = new { @readonly = true, @class = "form-control", @id = "telephone" } })
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <p>
+                            <strong>
+                                Reason
+                            </strong>
+                        </p>
+                        @if (Model.UserCanChangeHeaderInformation)
+                        {
+                            @Html.DropDownListFor(model => model.Reason, Model.Reasons.Select(item => new SelectListItem
+                   {
+                       Value = item.Name.ToString(),
+                       Text = item.Name
+                   }), "Select", new { @class = "form-control", @id = "reason" })
+                        }
+                        else
+                        {
+                            @Html.EditorFor(model => model.Reason, new { htmlAttributes = new { @class = "form-control", @readonly = true, @id = "reason" } })
+                        }
+                    </div>
+                </div>
+
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <p>
+                            <strong>
+                                Validation Date
+                            </strong>
+                        </p>
+                        @Html.EditorFor(model => model.UpdatedOn, new { htmlAttributes = new { @readonly = true, @class = "form-control" } })
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card" style="margin-bottom:10px">
+    <h5 class="card-header" data-bs-toggle="collapse" href="#collapseTwo" role="button" aria-expanded="true" aria-controls="collapseTwo">Tracking</h5>
+    <div class="no-padding accordion-collapse collapse show" id="collapseTwo">
+        <div class="card-body">
+            <div class="row">
+
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <p><strong>Carrier Name</strong></p>
+
+                        @if (Model.IdPickingStatus == (int)PickingStatusEnumViewModel.Pending)
+                        {
+                            @Html.DropDownListFor(model => model.CarrierName, Model.Carriers.Select(item => new SelectListItem
+                   {
+                       Value = item.Name.ToString(),
+                       Text = item.Name
+                   }), "Select", new { @class = "form-control", @id = "CarrierName" })
+                        }
+                        else
+                        {
+                            @Html.DropDownListFor(model => model.CarrierName, Model.Carriers.Select(item => new SelectListItem
+                   {
+                       Value = item.Name.ToString(),
+                       Text = item.Name
+                   }), "Select", new { @class = "form-control", @id = "CarrierName", @readonly = true })
+                        }
+                    </div>
+                </div>
+
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <p>
+                            <strong>
+                                Carrier Request Date
+                            </strong>
+                        </p>
+
+                        @Html.EditorFor(model => model.CarrierRequestDate, new { htmlAttributes = new { @class = "form-control", @id = "CarrierRequestDate", @type = "date", @readonly = true } })
+
+                    </div>
+                </div>
+
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <p><strong>Expected Picking Date</strong></p>
+
+                        @if (Model.IdPickingStatus == (int)PickingStatusEnumViewModel.Pending)
+                        {
+                            @Html.EditorFor(model => model.ExpectedPickingDate, new { htmlAttributes = new { @class = "form-control", @id = "ExpectedPickingDate", @type = "date" } })
+                        }
+                        else
+                        {
+                            @Html.EditorFor(model => model.ExpectedPickingDate, new { htmlAttributes = new { @class = "form-control", @id = "ExpectedPickingDate", @type = "date", @readonly = true } })
+                        }
+                    </div>
+                </div>
+
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <p><strong>Effective Picking Date</strong></p>
+
+                        @if (Model.IdPickingStatus == (int)PickingStatusEnumViewModel.PickingProcessing)
+                        {
+                            @Html.EditorFor(model => model.EffectivePickingDate, new { htmlAttributes = new { @class = "form-control", @id = "EffectivePickingDate", @type = "date" } })
+                        }
+                        else
+                        {
+                            @Html.EditorFor(model => model.EffectivePickingDate, new { htmlAttributes = new { @class = "form-control", @id = "EffectivePickingDate", @type = "date", @readonly = true } })
+                        }
+                    </div>
+                </div>
+
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <p><strong>Expected Return Date</strong></p>
+
+                        @if ((Model.IdPickingStatus == (int)PickingStatusEnumViewModel.Pending || Model.IdPickingStatus == (int)PickingStatusEnumViewModel.PickingProcessing) && Model.ExpectedReturnDate == null)
+                        {
+                            @Html.EditorFor(model => model.ExpectedReturnDate, new { htmlAttributes = new { @class = "form-control", @id = "ExpectedReturnDate", @type = "date" } })
+                        }
+                        else
+                        {
+                            @Html.EditorFor(model => model.ExpectedReturnDate, new { htmlAttributes = new { @class = "form-control", @id = "ExpectedReturnDate", @type = "date", @readonly = true } })
+                        }
+                    </div>
+                </div>
+
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <p><strong>Effective Return Date</strong></p>
+
+                        @if (Model.IdPickingStatus == (int)PickingStatusEnumViewModel.Transit)
+                        {
+                            @Html.EditorFor(model => model.EffectiveReturnDate, new { htmlAttributes = new { @class = "form-control", @id = "EffectiveReturnDate", @type = "date" } })
+                        }
+                        else
+                        {
+                            @Html.EditorFor(model => model.EffectiveReturnDate, new { htmlAttributes = new { @class = "form-control", @id = "EffectiveReturnDate", @type = "date", @readonly = true } })
+                        }
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row">
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <p><strong>End Date</strong></p>
+
+                        @if (Model.IdPickingStatus == (int)PickingStatusEnumViewModel.ReceivingProcessing)
+                        {
+                            @Html.EditorFor(model => model.EndDate, new { htmlAttributes = new { @class = "form-control", @id = "EndDate", @type = "date" } })
+                        }
+                        else
+                        {
+                            @Html.EditorFor(model => model.EndDate, new { htmlAttributes = new { @class = "form-control", @id = "EndDate", @type = "date", @readonly = true } })
+                        }
+                    </div>
+                </div>
+
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <p><strong>Observation</strong></p>
+
+                        @Html.TextAreaFor(model => model.CorrectionObservation, new { @class = "form-control", @id = "CorrectionObservation", @readonly = true })
+                    </div>
+                </div>
+
+                @if (Model.UserIsAdmin)
+                {
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            <p><strong>Include Observation</strong></p>
+
+                            @Html.EditorFor(model => model.AdminObservation, new { htmlAttributes = new { @class = "form-control", @id = "AdminObservation" } })
+                        </div>
+                    </div>
+                }
+
+            </div>
+
+            <br />
+
+            <div class="row">
+
+                @switch (Model.IdPickingStatus)
+                {
+                    case (int)PickingStatusEnumViewModel.Pending:
+                        @if (Model.UserIsAdmin)
+                        {
+                            <div align="right">
+                                <p>
+                                    <input id="IdCancel" name="command" value="Cancel" class="btn btn-danger" />
+                                    <input id="idCorrection" name="command" value="Correction" class="btn btn-warning" />
+                                    <input id="idPickingProcess" name="command" value="Picking Process" class="btn btn-success" />
+                                </p>
+                            </div>
+                        }
+                        else
+                        {
+                            <div align="right">
+                                <p>
+                                    <input id="IdCancel" name="command" value="Cancel" class="btn btn-danger" disabled />
+                                    <input id="idCorrection" name="command" value="Correction" class="btn btn-warning" disabled />
+                                    <input id="idPickingProcess" name="command" value="Picking Process" class="btn btn-success" disabled />
+                                </p>
+                            </div>
+                        }
+
+                        break;
+                    case (int)PickingStatusEnumViewModel.PickingProcessing:
+                        @if (Model.UserIsAdmin)
+                        {
+                            <div align="right">
+                                <p>
+                                    <input id="idTransit" name="command" value="Transit" class="btn btn-success" />
+                                </p>
+                            </div>
+                        }
+                        else
+                        {
+                            <div align="right">
+                                <p>
+                                    <input id="idTransit" name="command" value="Transit" class="btn btn-success" disabled />
+                                </p>
+                            </div>
+                        }
+                        break;
+                    case (int)PickingStatusEnumViewModel.Transit:
+                        @if (Model.UserIsAdmin)
+                        {
+                            <div align="right">
+                                <p>
+                                    <input id="idReceivingProcessing" name="command" value="Receiving Processing" class="btn btn-success" />
+                                </p>
+                            </div>
+                        }
+                        else
+                        {
+                            <div align="right">
+                                <p>
+                                    <input id="idReceivingProcessing" name="command" value="Receiving Processing" class="btn btn-success" disabled />
+                                </p>
+                            </div>
+                        }
+                        break;
+                    case (int)PickingStatusEnumViewModel.ReceivingProcessing:
+                        @if (Model.UserIsAdmin)
+                        {
+                            <div align="right">
+                                <p>
+                                    <input id="idEndProcess" name="command" value="End Process" class="btn btn-success" />
+                                </p>
+                            </div>
+                        }
+                        else
+                        {
+                            <div align="right">
+                                <p>
+                                    <input id="idEndProcess" name="command" value="End Process" class="btn btn-success" disabled />
+                                </p>
+                            </div>
+                        }
+                        break;
+                    default:
+                        break;
+                }
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card" style="margin-bottom:10px">
+    <h5 class="card-header" data-bs-toggle="collapse" href="#collapseThree" role="button" aria-expanded="true" aria-controls="collapseThree">Attachments</h5>
+    <div class="no-padding accordion-collapse collapse show" id="collapseThree">
+        <div class="card-body">
+            <div class="row">
+
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <p>
+                            <strong>
+                                Invoice Return
+                            </strong>
+                        </p>
+
+                        @if (Model.UserCanAddItems)
+                        {
+                            @Html.EditorFor(model => model.PickingInvoice.InvoiceReturn, new { htmlAttributes = new { @class = "form-control", @id = "invoiceReturn", @type = "number", onkeypress = "return onlyNumberKey(event)" } })
+                        }
+                        else
+                        {
+                            @Html.EditorFor(model => model.PickingInvoice.InvoiceReturn, new { htmlAttributes = new { @readonly = true, @class = "form-control", @id = "invoiceReturn" } })
+                        }
+
+                    </div>
+                </div>
+
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <p>
+                            <strong>
+                                Invoice Return Date
+                            </strong>
+                        </p>
+
+                        @if (Model.UserCanAddItems)
+                        {
+                            <input class="form-control" asp-for="PickingInvoice.InvoiceReturnDate" asp-format="{0:dd/MM/yyyy}" id="invoiceReturnDate" />
+                        }
+                        else
+                        {
+                            <input class="form-control" asp-for="PickingInvoice.InvoiceReturnDate" asp-format="{0:dd/MM/yyyy}" id="invoiceReturnDate" disabled />
+                        }
+
+                    </div>
+                </div>
+
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <p>
+                            <strong>
+                                Total Value
+                            </strong>
+                        </p>
+
+                        @if (Model.UserCanAddItems)
+                        {
+                            @Html.EditorFor(model => model.PickingInvoice.TotalValue, new { htmlAttributes = new { @class = "form-control", @id = "totalValue" } })
+                        }
+                        else
+                        {
+                            @Html.EditorFor(model => model.PickingInvoice.TotalValue, new { htmlAttributes = new { @readonly = true, @class = "form-control", @id = "totalValue" } })
+                        }
+
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <p>
+                            <strong>
+                                Approval File
+                            </strong>
+                        </p>
+
+                        @if (Model.UserCanAddItems)
+                        {
+                            @Html.TextBoxFor(model => model.PickingInvoice.ApprovalFile, new { type = "file", @class = "form-control", @id = "approvalFile" })
+                        }
+                        else
+                        {
+                            <input class="form-control" type="file" disabled>
+                        }
+
+                    </div>
+                </div>
+
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <p>
+                            <strong>
+                                Invoice Return File
+                            </strong>
+                        </p>
+
+                        @if (Model.UserCanAddItems)
+                        {
+                            @Html.TextBoxFor(model => model.PickingInvoice.InvoiceReturn, new { type = "file", @class = "form-control", @id = "invoiceReturnFile" })
+                        }
+                        else
+                        {
+                            <input class="form-control" type="file" disabled>
+                        }
+
+                    </div>
+                </div>
+
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <p>
+                            <strong>
+                                Correction Letter File
+                            </strong>
+                        </p>
+
+                        @if (Model.UserCanAddItems)
+                        {
+                            @Html.TextBoxFor(model => model.PickingInvoice.SeriesLetterFile, new { type = "file", @class = "form-control", @id = "seriesLetterFile" })
+                        }
+                        else
+                        {
+                            <input class="form-control" type="file" disabled>
+                        }
+
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col-sm-4">
+                    <div class="form-group">
+                        <p>
+                            <strong>
+                                Observation
+                            </strong>
+                        </p>
+
+                        @if (Model.UserCanAddItems)
+                        {
+                            @Html.TextAreaFor(m => m.PickingInvoice.Observation, new { @class = "form-control", @id = "observation" })
+                        }
+                        else
+                        {
+                            @Html.TextAreaFor(m => m.PickingInvoice.Observation, new { @readonly = true, @class = "form-control", @id = "observation" })
+                        }
+
+                    </div>
+                </div>
+
+                <div class="col-sm-1" style="height:25px; margin-top: 63px">
+                    @if (Model.UserCanAddItems)
+                    {
+                        <input name="command" value="Add" class="btn btn-primary form-control" id="btnAddInvoice" />
+                    }
+                    else
+                    {
+                        <input name="command" value="Add" class="btn btn-primary form-control" id="btnAddInvoice" disabled />
+                    }
+                </div>
+            </div>
+
+            <br />
+        </div>
+
+        <div class="card-body">
+            <div class="row" style="margin-top:10px">
+
+                <table class="table table-striped table-bordered" id="InvoiceListId">
+                    <thead>
+                        <tr>
+                            <th scope="col">Invoice Return</th>
+                            <th scope="col">Invoice Return Date</th>
+                            <th scope="col">Approval File Name</th>
+                            <th scope="col">Return File Name</th>
+                            <th scope="col">Correction Letter File Name</th>
+                            <th scope="col">Observation</th>
+                             @if (Model.UserCanAddItems)
+                            {
+                                <th scope="col" colspan="2">Total Value</th>
+                            }
+                            else
+                            {
+                                <th scope="col">Total Value</th>
+                            }
+                            
+                            @if (Model.UserCanAddItems)
+                            {
+                                <th scope="col">Remove Item</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.PickingInvoices.Any())
+                        {
+                            var line = 1;
+
+                            foreach (var item in Model.PickingInvoices)
+                            {
+
+                                var invoiceId = "invoice" + line;
+                                var approvalFileId = "approvalFile" + line;
+
+                                var uploadApprovalFile = "upload-approval-file-" + item.Id;
+                                var uploadReturnFile = "upload-return-file-" + item.Id;
+                                var uploadSeriesLetterFile = "upload-series-letter-file-" + item.Id;
+
+                                var totalValue = "total-value-" + item.Id;
+                                var updateTotalValue = "update-total-value-" + item.Id;
+
+                                <tr id="@invoiceId">
+                                    <td hidden>@item.Id</td>
+                                    <td value="@item.InvoiceReturn">@item.InvoiceReturn</td>
+                                    <td>@item.InvoiceReturnDate.ToString("dd/MM/yyyy")</td>
+                                    <td hidden>@item.ApprovalFile</td>
+                                    @if (String.IsNullOrEmpty(item.ApprovalFileName))
+                                    {
+                                        <td>
+                                            <input id="@uploadApprovalFile" type="file" />
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td>
+                                            @item.ApprovalFileName
+                                            <a href="/ThinkTool/Logistic/Picking/DownloadApprovalFile/@item.Id">
+                                                <img style="width: 20px;height: 20px" class="rounded" src="~/content/Images/dowload-icon.png" />
+                                            </a>
+                                        </td>
+                                    }
+                                    <td hidden>@item.ReturnFile</td>
+
+                                    @if (String.IsNullOrEmpty(item.ReturnFileName))
+                                    {
+                                        <td>
+                                            <input id="@uploadReturnFile" type="file" />
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td>
+                                            @item.ReturnFileName
+                                            <a href="/ThinkTool/Logistic/Picking/DownloadReturnFile/@item.Id">
+                                                <img style="width: 20px;height: 20px" class="rounded" src="~/content/Images/dowload-icon.png" />
+                                            </a>
+                                        </td>
+                                    }
+                                    <td hidden>@item.SeriesLetterFile</td>
+                                    @if (String.IsNullOrEmpty(item.SeriesLetterFileName))
+                                    {
+                                        <td>
+                                            <input id="@uploadSeriesLetterFile" type="file" />
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td>
+                                            @item.SeriesLetterFileName
+                                            <a href="/ThinkTool/Logistic/Picking/DownloadSeriesLetterFile/@item.Id">
+                                                <img style="width: 20px;height: 20px" class="rounded" src="~/content/Images/dowload-icon.png" />
+                                            </a>
+                                        </td>
+                                    }
+                                    <td>@item.Observation</td>
+
+                                    @if (Model.UserCanAddItems)
+                                    {
+                                        <td>
+                                            @Html.EditorFor(model => item.TotalValue, new { htmlAttributes = new { @class = "form-control", @id = totalValue } })
+                                        </td>
+
+                                        <td><button id="@updateTotalValue">Update</button></td>
+                                    }
+                                    else
+                                    {
+                                        <td>@item.TotalValue</td>
+                                    }
+
+                                    @if (Model.UserCanAddItems)
+                                    {
+                                        <td><button onclick="removeInvoice(@line)">Remove</button></td>
+                                    }
+                                </tr>
+
+                                line++;
+                            }
+                        }
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card" style="margin-bottom:10px">
+    <h5 class="card-header" data-bs-toggle="collapse" href="#collapseFour" role="button" aria-expanded="true" aria-controls="collapseFour">Items</h5>
+    <div class="no-padding accordion-collapse collapse show" id="collapseFour">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <p>
+                            <strong>
+                                Invoice Return
+                            </strong>
+                        </p>
+
+                        @if (Model.UserCanAddItems)
+                        {
+                            @Html.DropDownListFor(model => model.PickingItem.Process, Model.PickingItem.Processes.Select(item => new SelectListItem
+                   {
+                       Value = item,
+                       Text = item
+                   }), "Select", new { @class = "form-control", @id = "itemProcess" })
+                        }
+                        else
+                        {
+                            <input class="form-control text-box single-line" readonly="True" type="text" value="">
+                        }
+
+                    </div>
+                </div>
+
+                <div class="col-sm-1">
+                    <div class="form-group">
+                        <p>
+                            <strong>
+                                PN
+                            </strong>
+                        </p>
+
+                        @if (Model.UserCanAddItems)
+                        {
+                            @Html.EditorFor(model => model.PickingItem.PartNumber, new { htmlAttributes = new { @class = "form-control", @id = "partNumber" } })
+                        }
+                        else
+                        {
+                            @Html.EditorFor(model => model.PickingItem.PartNumber, new { htmlAttributes = new { @readonly = true, @class = "form-control", @id = "partNumber" } })
+                        }
+
+                    </div>
+                </div>
+
+
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <p>
+                            <strong>
+                                MTM Description
+                            </strong>
+                        </p>
+
+                        @if (Model.UserCanAddItems)
+                        {
+                            @Html.EditorFor(model => model.PickingItem.MTM, new { htmlAttributes = new { @class = "form-control", @id = "mtm" } })
+                        }
+                        else
+                        {
+                            @Html.EditorFor(model => model.PickingItem.MTM, new { htmlAttributes = new { @readonly = true, @class = "form-control", @id = "mtm" } })
+                        }
+
+                    </div>
+                </div>
+
+                <div class="col-sm-1">
+                    <div class="form-group">
+                        <p>
+                            <strong>
+                                Brand
+                            </strong>
+                        </p>
+
+                        @if (Model.UserCanAddItems)
+                        {
+                            @Html.DropDownListFor(model => model.PickingItem.IdBrand, Model.PickingItem.Brands.Select(item => new SelectListItem
+                   {
+                       Value = item.Id.ToString(),
+                       Text = item.Name
+                   }), "Select", new { @class = "form-control", @id = "brand" })
+                        }
+                        else
+                        {
+                            <input class="form-control text-box single-line" readonly="True" type="text" value="">
+                        }
+
+                    </div>
+                </div>
+
+                <div class="col-sm-1">
+                    <div class="form-group">
+                        <p>
+                            <strong>
+                                Return Order
+                            </strong>
+                        </p>
+
+                        @if (Model.UserCanAddItems)
+                        {
+                            @Html.EditorFor(model => model.PickingItem.ReturnOrder, new { htmlAttributes = new { @class = "form-control", @id = "returnOrder" } })
+                        }
+                        else
+                        {
+                            @Html.EditorFor(model => model.PickingItem.ReturnOrder, new { htmlAttributes = new { @readonly = true, @class = "form-control", @id = "returnOrder" } })
+                        }
+
+                    </div>
+                </div>
+
+                <div class="col-sm-2">
+                    <div class="form-group">
+                        <p>
+                            <strong>
+                                Origin Invoice
+                            </strong>
+                        </p>
+
+                        @if (Model.UserCanAddItems)
+                        {
+                            @Html.EditorFor(model => model.PickingItem.OriginInvoive, new { htmlAttributes = new { @class = "form-control", @id = "originInvoice" } })
+                        }
+                        else
+                        {
+                            @Html.EditorFor(model => model.PickingItem.OriginInvoive, new { htmlAttributes = new { @readonly = true, @class = "form-control", @id = "originInvoice" } })
+                        }
+
+                    </div>
+                </div>
+
+                <div class="col-sm-1">
+                    <div class="form-group">
+                        <p>
+                            <strong>
+                                Quantity
+                            </strong>
+                        </p>
+
+                        @if (Model.UserCanAddItems)
+                        {
+                            @Html.EditorFor(model => model.PickingItem.Quantity, new { htmlAttributes = new { @class = "form-control", @id = "quantity" } })
+                        }
+                        else
+                        {
+                            @Html.EditorFor(model => model.PickingItem.Quantity, new { htmlAttributes = new { @readonly = true, @class = "form-control", @id = "quantity" } })
+                        }
+
+                    </div>
+                </div>
+
+                <div class="col-sm-1" style="height:25px; margin-top: 40px">
+                    @if (Model.UserCanAddItems)
+                    {
+                        <input name="command" value="Add" class="btn btn-primary" id="btnAddItem" />
+                    }
+                    else
+                    {
+                        <input name="command" value="Add" class="btn btn-primary" id="btnAddItem" disabled />
+                    }
+                </div>
+
+            </div>
+
+            <div class="row" style="margin-top:10px">
+
+                <table class="table table-striped table-bordered" id="ItemListId">
+                    <thead>
+                        <tr>
+                            <th scope="col">Invoice Return</th>
+                            <th scope="col">PN</th>
+                            <th scope="col">MTM</th>
+                            <th scope="col">Brand</th>
+                            <th scope="col">Return Order</th>
+                            <th scope="col">Origin Invoice</th>
+                            <th scope="col">Quantity</th>
+                            @if (Model.UserCanAddItems)
+                            {
+                                <th scope="col">Remove Item</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.PickingItems.Any())
+                        {
+                            var line = 1;
+
+                            foreach (var item in Model.PickingItems)
+                            {
+                                var lineId = "item" + line;
+
+                                <tr id="@lineId">
+                                    <td hidden>@item.Id</td>
+                                    <td value="@item.InvoiceReturn">@item.InvoiceReturn</td>
+                                    <td>@item.PartNumber</td>
+                                    <td>@item.MTM</td>
+                                    <td hidden>@item.IdBrand</td>
+                                    <td>@item.Brand</td>
+                                    <td>@item.ReturnOrder</td>
+                                    <td>@item.OriginInvoive</td>
+                                    <td>@item.Quantity</td>
+                                    @if (Model.UserCanAddItems)
+                                    {
+                                        <td><button onclick="removeItem(@line)">Remove</button></td>
+                                    }
+                                </tr>
+
+                                line += 1;
+                            }
+                        }
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div align="right">
+    <p>
+        @Html.ActionLink("Back to List", "Index", new { id = "" }, new { @class = "btn btn-warning" })
+
+        @if (Model.UserCanAddItems)
+        {
+            <input id="idSave" name="command" value="Save Picking" class="btn btn-success" />
+        }
+        else
+        {
+            <input id="idSave" name="command" value="Save Picking" class="btn btn-success" disabled />
+        }
+    </p>
+</div>
+@* } *@
+
+
+<script>
+    function onlyNumberKey(evt) {
+
+        // Only ASCII character in that range allowed
+        let ASCIICode = (evt.which) ? evt.which : evt.keyCode
+        if (ASCIICode > 31 && (ASCIICode < 48 || ASCIICode > 57))
+            return false;
+        return true;
+    }
+
+    function isAfterNow(date) {
+
+        var today = (new Date(new Date().toString().split('GMT')[0] + ' UTC').toISOString()).substring(0, 10);
+
+        return date > today;
+    };
+
+    function isBeforeNow(date) {
+
+        var today = (new Date(new Date().toString().split('GMT')[0] + ' UTC').toISOString()).substring(0, 10);
+
+        return date !== '' && date < today;
+    };
+
+    $('[id^=upload-approval-file]').change(function (e) {
+
+        if (e.target.files[0]) {
+
+            document.querySelectorAll('*').forEach(function (node) {
+                node.style.cursor = 'wait';
+            });
+
+            var invoiceId = e.target.id.replace('upload-approval-file-', '');
+
+            var form = new FormData();
+
+            form.append(`Id`, invoiceId);
+            form.append(`ApprovalFileName`, e.target.files[0].name);
+            form.append(`ApprovalFile`, e.target.files[0]);
+
+            $.ajax(
+                {
+                    method: "POST",
+                    url: "/ThinkTool/Logistic/Picking/UploadAttachment",
+                    data: form,
+                    contentType: false,
+                    processData: false,
+                    success: function (data) {
+                        document.querySelectorAll('*').forEach(function (node) {
+                            node.style.cursor = 'default';
+                        });
+                        location.href = "/ThinkTool/Logistic/Picking/Detail?id=" + $('#Id').val();
+                    },
+                    error: function (error) {
+                        alert(error);
+                    }
+                });
+        }
+    });
+
+    $('[id^=upload-return-file]').change(function (e) {
+
+        if (e.target.files[0]) {
+
+            document.querySelectorAll('*').forEach(function (node) {
+                node.style.cursor = 'wait';
+            });
+
+            var invoiceId = e.target.id.replace('upload-return-file-', '');
+
+            var form = new FormData();
+
+            form.append(`Id`, invoiceId);
+            form.append(`ReturnFileName`, e.target.files[0].name);
+            form.append(`InvoiceReturnFile`, e.target.files[0]);
+
+            $.ajax(
+                {
+                    method: "POST",
+                    url: "/ThinkTool/Logistic/Picking/UploadAttachment",
+                    data: form,
+                    contentType: false,
+                    processData: false,
+                    success: function (data) {
+                        document.querySelectorAll('*').forEach(function (node) {
+                            node.style.cursor = 'default';
+                        });
+                        location.href = "/ThinkTool/Logistic/Picking/Detail?id=" + $('#Id').val();
+                    },
+                    error: function (error) {
+                        alert(error);
+                    }
+                });
+        }
+    });
+
+    $('[id^=upload-series-letter-file]').change(function (e) {
+
+        if (e.target.files[0]) {
+
+            document.querySelectorAll('*').forEach(function (node) {
+                node.style.cursor = 'wait';
+            });
+
+            var invoiceId = e.target.id.replace('upload-series-letter-file-', '');
+
+            var form = new FormData();
+
+            form.append(`Id`, invoiceId);
+            form.append(`SeriesLetterFileName`, e.target.files[0].name);
+            form.append(`SeriesLetterFile`, e.target.files[0]);
+
+            $.ajax(
+                {
+                    method: "POST",
+                    url: "/ThinkTool/Logistic/Picking/UploadAttachment",
+                    data: form,
+                    contentType: false,
+                    processData: false,
+                    success: function (data) {
+                        document.querySelectorAll('*').forEach(function (node) {
+                            node.style.cursor = 'default';
+                        });
+                        location.href = "/ThinkTool/Logistic/Picking/Detail?id=" + $('#Id').val();
+                    },
+                    error: function (error) {
+                        alert(error);
+                    }
+                });
+        }
+    });
+
+    $('[id^=update-total-value]').on("click", function (e) {
+
+        document.querySelectorAll('*').forEach(function (node) {
+            node.style.cursor = 'wait';
+        });
+
+        var invoiceId = e.target.id.replace('update-total-value-', '');
+        var totalValue = $('#total-value-' + invoiceId).val();
+
+        var form = new FormData();
+
+        form.append(`Id`, invoiceId);
+        form.append(`TotalValue`, totalValue);
+
+        $.ajax(
+            {
+                method: "POST",
+                url: "/ThinkTool/Logistic/Picking/UpdateTotalValue",
+                data: form,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    document.querySelectorAll('*').forEach(function (node) {
+                        node.style.cursor = 'default';
+                    });
+                    location.href = "/ThinkTool/Logistic/Picking/Detail?id=" + $('#Id').val();
+                },
+                error: function (error) {
+                    alert(error);
+                }
+            });
+    });
+
+    $("#idCorrection").on("click", function () {
+
+        let observation = prompt("You must enter a comment");
+
+        if (observation == "null" || observation == null || observation == "") {
+            return;
+        }
+
+        var tracking =
+        {
+            "IdPickingStatus": 2, //Correction
+            "CorrectionObservation": observation
+        };
+
+        SubmitForm(tracking);
+    });
+
+    $("#IdCancel").on("click", function () {
+        var tracking =
+        {
+            "IdPickingStatus": 7 //Canceled
+        };
+
+        SubmitForm(tracking);
+    });
+
+    $("#idPickingProcess").on("click", function () {
+        var carrierName = $('#CarrierName').val();
+        var expextedPickingDate = $('#ExpectedPickingDate').val();
+        var expectedReturnDate = $('#ExpectedReturnDate').val();
+
+        if (carrierName === '') {
+            $('#idAlert').text('Carrier must be selected');
+
+            $("#idAlert").parent().css("display", "block");
+            $('#idAlert').show();
+            return;
+        }
+
+        if (isBeforeNow(expextedPickingDate)) {
+            $('#idAlert').text('It is not possible to use a Expected Picking Date lower than today');
+
+            $("#idAlert").parent().css("display", "block");
+            $('#idAlert').show();
+            return;
+        }
+
+        if (isBeforeNow(expectedReturnDate)) {
+            $('#idAlert').text('It is not possible to use a Expected Return Date lower than today');
+
+            $("#idAlert").parent().css("display", "block");
+            $('#idAlert').show();
+            return;
+        }
+
+        var tracking =
+        {
+            "CarrierName": carrierName,
+            "ExpectedPickingDate": expextedPickingDate,
+            "ExpectedReturnDate": expectedReturnDate,
+            "IdPickingStatus": 3 //In Picking Process
+        };
+
+        SubmitForm(tracking);
+    });
+
+    $("#idTransit").on("click", function () {
+        var effectivePickingDate = $('#EffectivePickingDate').val();
+        var expectedReturnDate = $('#ExpectedReturnDate').val();
+
+        if ($('#ExpectedReturnDate').prop('readonly') === false && isBeforeNow(expectedReturnDate)) {
+            $('#idAlert').text('It is not possible to use a Expected Return Date lower than today');
+
+            $("#idAlert").parent().css("display", "block");
+            $('#idAlert').show();
+            return;
+        }
+
+        if (isAfterNow(effectivePickingDate)) {
+            $('#idAlert').text('It is not possible to use a Effective Picking Date greater than today');
+
+            $("#idAlert").parent().css("display", "block");
+            $('#idAlert').show();
+            return;
+        }
+
+        var tracking =
+        {
+            "EffectivePickingDate": effectivePickingDate,
+            "ExpectedReturnDate": expectedReturnDate,
+            "IdPickingStatus": 4 //In Transit
+        };
+
+        SubmitForm(tracking);
+    });
+
+    $("#idReceivingProcessing").on("click", function () {
+        var expectedReturnDate = $('#ExpectedReturnDate').val();
+        var effectiveReturnDate = $('#EffectiveReturnDate').val()
+
+        if (isAfterNow(effectiveReturnDate)) {
+            $('#idAlert').text('It is not possible to use a Effective Return Date greater than today');
+
+            $("#idAlert").parent().css("display", "block");
+            $('#idAlert').show();
+            return;
+        }
+
+        var tracking =
+        {
+            "ExpectedReturnDate": expectedReturnDate,
+            "EffectiveReturnDate": effectiveReturnDate,
+            "IdPickingStatus": 5 //In Receiving Processing
+        };
+
+        SubmitForm(tracking);
+    });
+
+    $("#idEndProcess").on("click", function () {
+        var endDate = $('#EndDate').val();
+
+        if (isAfterNow(endDate)) {
+            $('#idAlert').text('It is not possible to use a End Date greater than today');
+
+            $("#idAlert").parent().css("display", "block");
+            $('#idAlert').show();
+            return;
+        }
+
+        var tracking =
+        {
+            "EndDate": endDate,
+            "IdPickingStatus": 6 //Process Finished
+        };
+
+        SubmitForm(tracking);
+    });
+
+    function removeInvoice(id) {
+        var confirmed = confirm('Are you sure to remove this Invoice? This action will also remove all Products related');
+        if (!confirmed) {
+            return;
+        }
+
+        var invoice = $('#invoice' + id + ' td:nth-child(2)')[0].innerText;
+
+        $('#invoice' + id).remove();
+
+        $('#itemProcess option[value="' + invoice + '"]').remove()
+
+        $('#ItemListId tbody tr td[value="' + invoice + '"]').parent().remove()
+
+    };
+
+    function removeItem(id) {
+        var confirmed = confirm('Are you sure to remove this Item?');
+        if (!confirmed) {
+            return;
+        }
+
+        $('#item' + id).remove();
+
+    };
+
+    $("#btnAddInvoice").on("click", function () {
+        var invoiceReturn = $('#invoiceReturn').val();
+        var invoiceReturnDate = $('#invoiceReturnDate').val();
+        var approvalFileName = $('#approvalFile')[0].files[0] ? $('#approvalFile')[0].files[0].name : "";
+        var invoiceReturnName = $('#invoiceReturnFile')[0].files[0] ? $('#invoiceReturnFile')[0].files[0].name : "";
+        var seriesLetterName = $('#seriesLetterFile')[0].files[0] ? $('#seriesLetterFile')[0].files[0].name : "";
+        var observation = $('#observation').val();
+        var totalValue = $('#totalValue').val();
+
+        if (invoiceReturn === "" || invoiceReturnDate === "")
+            return;
+
+        var item = $("#InvoiceListId tbody tr").length + 1;
+
+        $('#InvoiceListId tbody').append('<tr id="invoice' + item + '"><td hidden>'
+            + 0 + '</td><td value="' + invoiceReturn + '">'
+            + invoiceReturn + '</td><td>'
+            + invoiceReturnDate + '</td><td hidden>'
+            + $("#approvalFile")[0].files[0] + '</td><td>'
+            + approvalFileName + '</td><td hidden>'
+            + $("#invoiceReturnFile")[0].files[0] + '</td><td>'
+            + invoiceReturnName + '</td><td hidden>'
+            + $("#seriesLetterFile")[0].files[0] + '</td><td>'
+            + seriesLetterName + '</td><td>'
+            + observation + '</td><td>'
+            + totalValue + '</td><td><button onclick="removeInvoice(' + item + ')">Remove</button></td></tr>')
+
+        let approvalFileOrigin = document.querySelector('#approvalFile');
+        let clonedApprovalFileOrigin = approvalFileOrigin.cloneNode(true);
+        clonedApprovalFileOrigin.id = 'approvalFile_' + item;
+        clonedApprovalFileOrigin.hidden = true;
+
+        let invoiceReturnFileOrigin = document.querySelector('#invoiceReturnFile');
+        let clonedInvoiceReturnFileOrigin = invoiceReturnFileOrigin.cloneNode(true);
+        clonedInvoiceReturnFileOrigin.id = 'invoiceReturnFile_' + item;
+        clonedInvoiceReturnFileOrigin.hidden = true;
+
+        let seriesLetterFileOrigin = document.querySelector('#seriesLetterFile');
+        let clonedSeriesLetterFileOrigin = seriesLetterFileOrigin.cloneNode(true);
+        clonedSeriesLetterFileOrigin.id = 'seriesLetterFile_' + item;
+        clonedSeriesLetterFileOrigin.hidden = true;
+
+        document.getElementById("invoice" + item).appendChild(clonedApprovalFileOrigin);
+        document.getElementById("invoice" + item).appendChild(clonedInvoiceReturnFileOrigin);
+        document.getElementById("invoice" + item).appendChild(clonedSeriesLetterFileOrigin);
+
+        $('#itemProcess').append('<option value="1">' + invoiceReturn + '</option>')
+
+        $('#idAlert').hide();
+
+        $('#invoiceReturn').val("");
+        $('#invoiceReturnDate').val("");
+        $('#approvalFile').val("");
+        $('#invoiceReturnFile').val("");
+        $('#seriesLetterFile').val("");
+        $('#observation').val("");
+        $('#totalValue').val("");
+    });
+
+    $("#btnAddItem").on("click", function () {
+        var invoice = $('#itemProcess option:selected').text();
+        var partNumber = $('#partNumber').val();
+        var mtm = $('#mtm').val();
+        var idBrand = $('#brand option:selected').val();
+        var brand = $('#brand option:selected').text();
+        var returnOrder = $('#returnOrder').val();
+        var originInvoice = $('#originInvoice').val();
+        var quantity = $('#quantity').val();
+
+        if (invoice === "" || partNumber === "" || mtm === "" || returnOrder === "" || originInvoice === "" || quantity === "")
+            return;
+
+        var item = $("#ItemListId tbody tr").length + 1;
+
+        $('#ItemListId tbody').append('<tr id="item' + item + '"><td hidden>'
+            + 0 + '</td><td value="' + + invoice + '">'
+            + invoice + '</td><td>'
+            + partNumber + '</td><td>'
+            + mtm + '</td><td hidden>'
+            + idBrand + '</td><td>'
+            + brand + '</td><td>'
+            + returnOrder + '</td><td>'
+            + originInvoice + '</td><td>'
+            + quantity + '</td><td><button onclick="removeItem(' + item + ')">Remove</button></td></tr>')
+
+        $('#idAlert').hide();
+
+        $('#itemProcess').val("");
+        $('#partNumber').val("");
+        $('#mtm').val("");
+        $('#brand').val("");
+        $('#returnOrder').val("");
+        $('#originInvoice').val("");
+        $('#quantity').val("");
+    });
+
+    $("#idSave").on("click", function () {
+
+        if ($('#IdPickingStatus').val() === '2') {
+            let observation = prompt("You must enter a comment");
+
+            if (observation == "null" || observation == null || observation == "") {
+                return;
+            }
+
+            var tracking =
+            {
+                "CorrectionObservation": observation
+            };
+
+            SubmitForm(tracking);
+        }
+        else {
+            SubmitForm();
+        }
+
+    });
+
+    function SubmitForm(tracking) {
+
+        var idArea = $('#IdArea').val();
+        var idProcessType = $('#IdProcessType').val();
+
+        var client = $('#client').val();
+        var city = $('#city').val();
+        var uf = $('#uf').val();
+
+        var contact = $("#contact").val();
+        var email = $("#email").val();
+        var telephone = $("#telephone").val();
+
+        var reason = $("#reason").val();
+
+        if (idArea === "") {
+            $('#idAlert').text('Area must be choosen');
+
+            $("#idAlert").parent().css("display", "block");
+            $('#idAlert').show();
+            return;
+        }
+
+        if (idProcessType === "") {
+            $('#idAlert').text('Process type must be choosen');
+
+            $("#idAlert").parent().css("display", "block");
+            $('#idAlert').show();
+            return;
+        }
+
+        if (client === "") {
+            $('#idAlert').text('Client must be set');
+
+            $("#idAlert").parent().css("display", "block");
+            $('#idAlert').show();
+            return;
+        }
+
+        if (city === "") {
+            $('#idAlert').text('City must be set');
+
+            $("#idAlert").parent().css("display", "block");
+            $('#idAlert').show();
+            return;
+        }
+
+        if (uf === "") {
+            $('#idAlert').text('UF must be set');
+
+            $("#idAlert").parent().css("display", "block");
+            $('#idAlert').show();
+            return;
+        }
+
+        if (contact === "") {
+            $('#idAlert').text('Contact must be set');
+
+            $("#idAlert").parent().css("display", "block");
+            $('#idAlert').show();
+            return;
+        }
+
+        if (email === "") {
+            $('#idAlert').text('Email must be set');
+
+            $("#idAlert").parent().css("display", "block");
+            $('#idAlert').show();
+            return;
+        }
+
+        if (telephone === "") {
+            $('#idAlert').text('Telephone must be set');
+
+            $("#idAlert").parent().css("display", "block");
+            $('#idAlert').show();
+            return;
+        }
+
+        if (reason === "") {
+            $('#idAlert').text('Reason must be choosen');
+
+            $("#idAlert").parent().css("display", "block");
+            $('#idAlert').show();
+            return;
+        }
+
+        document.querySelectorAll('*').forEach(function (node) {
+            node.style.cursor = 'wait';
+        });
+
+        var form = new FormData();
+        form.append('Id', $('#Id').val());
+
+        form.append('IdPickingArea', idArea);
+        form.append('IdPickingProcessType', idProcessType);
+        form.append('Client', client);
+        form.append('City', city);
+        form.append('UF', uf);
+        form.append('Contact', contact);
+        form.append('Email', email);
+        form.append('Telephone', telephone);
+        form.append('Reason', reason);
+
+        if ($('#AdminObservation').val() != "")
+            form.append('AdminObservation', $('#AdminObservation').val());
+
+        if (tracking != null) {
+
+            if (tracking.CarrierName != null && tracking.CarrierName != "")
+                form.append('CarrierName', tracking.CarrierName);
+
+            if (tracking.CarrierRequestDate != null && tracking.CarrierRequestDate != "")
+                form.append('CarrierRequestDate', tracking.CarrierRequestDate);
+
+            if (tracking.ExpectedPickingDate != null && tracking.ExpectedPickingDate != "")
+                form.append('ExpectedPickingDate', tracking.ExpectedPickingDate);
+
+            if (tracking.EffectivePickingDate != null && tracking.EffectivePickingDate != "")
+                form.append('EffectivePickingDate', tracking.EffectivePickingDate);
+
+            if (tracking.ExpectedReturnDate != null && tracking.ExpectedReturnDate != "")
+                form.append('ExpectedReturnDate', tracking.ExpectedReturnDate);
+
+            if (tracking.EffectiveReturnDate != null && tracking.EffectiveReturnDate != "")
+                form.append('EffectiveReturnDate', tracking.EffectiveReturnDate);
+
+            if (tracking.EndDate != null && tracking.EndDate != "")
+                form.append('EndDate', tracking.EndDate);
+
+            if (tracking.IdPickingStatus != null && tracking.IdPickingStatus != "")
+                form.append('IdPickingStatus', tracking.IdPickingStatus);
+
+            if (tracking.CorrectionObservation != null && tracking.CorrectionObservation != "")
+                form.append('CorrectionObservation', tracking.CorrectionObservation);
+        }
+
+        var invoicesIndex = 0;
+
+        $.each($("#InvoiceListId tbody tr"), function (key, value) {
+
+            var rowIndex = $(this)[0].id.toString().replace('invoice', '');
+
+            var id = value.children[0].innerText;
+
+            form.append(`Invoices[${invoicesIndex}].Id`, id);
+
+            if (parseInt(id) === 0) {
+
+                var invoiceReturn = value.children[1].innerText;
+                var invoiceReturnDate = value.children[2].innerText;
+                var approvalFile = $("#approvalFile")[0].files[0];
+                var approvalFileName = value.children[4].innerText;
+                var returnFile = $("#invoiceReturnFile")[0].files[0];
+                var returnFileName = value.children[6].innerText;
+                var seriesLetterFile = $("#seriesLetterFile")[0].files[0];
+                var seriesLetterFileName = value.children[8].innerText;
+                var observation = value.children[9].innerText;
+                var totalValue = value.children[10].innerText;
+
+                form.append(`Invoices[${invoicesIndex}].InvoiceReturn`, invoiceReturn);
+                form.append(`Invoices[${invoicesIndex}].InvoiceReturnDate`, invoiceReturnDate);
+                form.append(`Invoices[${invoicesIndex}].ApprovalFileName`, approvalFileName);
+                form.append(`Invoices[${invoicesIndex}].ApprovalFile`, $("#approvalFile_" + rowIndex)[0].files[0]);
+                form.append(`Invoices[${invoicesIndex}].ReturnFileName`, returnFileName);
+                form.append(`Invoices[${invoicesIndex}].InvoiceReturnFile`, $("#invoiceReturnFile_" + rowIndex)[0].files[0]);
+                form.append(`Invoices[${invoicesIndex}].SeriesLetterFileName`, seriesLetterFileName);
+                form.append(`Invoices[${invoicesIndex}].SeriesLetterFile`, $("#seriesLetterFile_" + rowIndex)[0].files[0]);
+                form.append(`Invoices[${invoicesIndex}].Observation`, observation);
+                form.append(`Invoices[${invoicesIndex}].TotalValue`, totalValue);
+            }
+
+            invoicesIndex += 1;
+
+        });
+
+        var itemIndex = 0;
+
+        $.each($("#ItemListId tbody tr"), function (key, value) {
+
+            var rowIndex = $(this)[0].id.toString().replace('item', '');
+
+            var id = value.children[0].innerText;
+
+            form.append(`Items[${itemIndex}].Id`, id);
+
+            if (parseInt(id) === 0) { 
+            
+                var invoiceReturn = value.children[1].innerText;
+                var partNumber = value.children[2].innerText;
+                var mtm = value.children[3].innerText;
+                var idBrand = value.children[4].innerText;
+                var returnOrder = value.children[6].innerText;
+                var originInvoice = value.children[7].innerText;
+                var quantity = value.children[8].innerText;
+
+                form.append(`Items[${itemIndex}].InvoiceReturn`, invoiceReturn);
+                form.append(`Items[${itemIndex}].PartNumber`, partNumber);
+                form.append(`Items[${itemIndex}].MTM`, mtm);
+                form.append(`Items[${itemIndex}].IdBrand`, idBrand);
+                form.append(`Items[${itemIndex}].ReturnOrder`, returnOrder);
+                form.append(`Items[${itemIndex}].OriginInvoive`, originInvoice);
+                form.append(`Items[${itemIndex}].Quantity`, quantity);
+            }
+
+            itemIndex += 1;
+
+        });
+
+        $.ajax(
+            {
+                method: "POST",
+                url: "/ThinkTool/Logistic/Picking/SaveDetails",
+                data: form,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    document.querySelectorAll('*').forEach(function (node) {
+                        node.style.cursor = 'default';
+                    });
+                    location.href = "/ThinkTool/Logistic/Picking/Index";
+                },
+                error: function (error) {
+                    alert(error);
+                }
+            });
+
+    };
+
+</script>

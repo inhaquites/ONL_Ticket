@@ -1,0 +1,53 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Areas\Logistic\Views\PickingRequest\**" />
+    <Compile Remove="Services\ModelDTOs\**" />
+    <Content Remove="Areas\Logistic\Views\PickingRequest\**" />
+    <Content Remove="Services\ModelDTOs\**" />
+    <EmbeddedResource Remove="Areas\Logistic\Views\PickingRequest\**" />
+    <EmbeddedResource Remove="Services\ModelDTOs\**" />
+    <None Remove="Areas\Logistic\Views\PickingRequest\**" />
+    <None Remove="Services\ModelDTOs\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Views\Home\TesteIndex.cshtml.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="wwwroot\content\Images\gear.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+    <PackageReference Include="Confluent.Kafka" Version="2.2.0" />
+    <PackageReference Include="EPPlus" Version="8.0.5" />
+    <PackageReference Include="jQuery" Version="3.7.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Negotiate" Version="9.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="9.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
+    <PackageReference Include="NPOI" Version="2.6.2" />
+    <PackageReference Include="System.Drawing.Common" Version="9.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\content\Images\LenovoLogo.jpeg" />
+    <None Include="wwwroot\Files\TemplateCompetitorFile.xlsx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>

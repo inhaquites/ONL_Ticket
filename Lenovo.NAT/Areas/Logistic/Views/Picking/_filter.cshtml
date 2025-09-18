@@ -1,0 +1,60 @@
+﻿@using Lenovo.NAT.ViewModel.Logistic.Picking
+@model PickingFilter
+
+@using (Html.BeginForm("Index", "Picking", FormMethod.Get))
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Status</th>
+                <th scope="col">Area</th>
+                <th scope="col">Process Type</th>
+                <th scope="col">Client</th>
+                <th scope="col">Process</th>
+                <th scope="col">Created On</th>
+                <th scope="col">Validation Date</th>
+            </tr>
+        </thead>
+        <tr>
+            <td>
+                @Html.DropDownListFor(model => model.IdPickingStatus, Model.PickingStatus.Select(item => new SelectListItem
+       {
+           Value = item.Id.ToString(),
+           Text = item.Name
+       }), "Select", new { @class = "form-control" })
+
+            </td>
+            <td>
+                @Html.DropDownListFor(model => model.IdPickingArea, Model.PickingAreas.Select(item => new SelectListItem
+       {
+           Value = item.Id.ToString(),
+           Text = item.Name
+       }), "Select", new { @class = "form-control" })
+
+            </td>
+            <td>
+                @Html.DropDownListFor(model => model.IdPickingProcessType, Model.ProcessTypes.Select(item => new SelectListItem
+       {
+           Value = item.Id.ToString(),
+           Text = item.Name
+       }), "Select", new { @class = "form-control" })
+
+            </td>
+            <td>@Html.TextBoxFor(model => model.Client, new { @class = "form-control", @placeholder = "" })</td>
+            <td>@Html.TextBoxFor(model => model.Process, new { @class = "form-control", @placeholder = "" })</td>
+            <td><input class="form-control" asp-for="CreatedOn" asp-format="{0:dd/MM/yyyy}" /></td>
+            <td><input class="form-control" asp-for="ValidationDate" asp-format="{0:dd/MM/yyyy}" /></td>
+    </table>
+
+    <div align="right">
+        @if (Model.IsAdmin)
+        {
+            <input type="submit" value="Admin Download" class="btn btn-success" asp-area="Logistic" asp-controller="Picking" asp-action="AdminExportExcel" />
+        }
+
+        <input type="submit" value="Search" class="btn btn-primary" asp-area="Logistic" asp-controller="Picking" asp-action="Index" asp-route-pageSize="@Model.PaginationInfo.PageSize" />
+        <input type="submit" value="Download" class="btn btn-success" asp-area="Logistic" asp-controller="Picking" asp-action="ExportExcel" />
+        <input type="submit" value="Create" class="btn btn-primary" asp-area="Logistic" asp-controller="Picking" asp-action="Create" />
+    </div>
+}
+<hr />

@@ -1,0 +1,2512 @@
+﻿@model Lenovo.NAT.ViewModel.Logistic.OnlTicket.OnlTicketViewModel
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+    ViewData["Title"] = string.IsNullOrEmpty(Model.ID) ? "New ONL Ticket" : "Edit ONL Ticket";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h3>@(string.IsNullOrEmpty(Model.ID) ? "New ONL Ticket" : $"Edit ONL Ticket - ID: {Model.ID}")</h3>
+<hr />
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    .form-group p {
+        margin-bottom: 8px;
+        display: block;
+    }
+</style>
+
+@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+@if (TempData["Success"] != null)
+{
+    <script>
+        $(document).ready(function() {
+            showSuccessToast('@TempData["Success"]');
+        });
+    </script>
+}
+
+@using (Html.BeginForm(string.IsNullOrEmpty(Model.ID) ? "Create" : "Edit", "OnlTicket", FormMethod.Post))
+{
+    @Html.HiddenFor(model => model.ID)
+    
+    <div class="alert">
+        <span id="idAlert" style="display: none; background: red" class="closebtn" onclick="this.parentElement.style.display='none';"></span>
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+        <h5 class="card-header" data-bs-toggle="collapse" href="#collapseOne" role="button" aria-expanded="true" aria-controls="collapseOne">ONL Ticket Information</h5>
+        <div class="no-padding accordion-collapse collapse show" id="collapseOne">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <p>
+                                <strong>
+                                    Log Number
+                                </strong>
+                            </p>
+                            @Html.EditorFor(model => model.LogNumber, new { htmlAttributes = new { @class = "form-control", @id = "logNumber" } })
+                        </div>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <p>
+                                <strong>
+                                    Created Date
+                                </strong>
+                            </p>
+                            <input type="date" class="form-control" id="createdDate" name="CreatedDate" value="@(Model.CreatedDate?.ToString("yyyy-MM-dd"))" />
+                        </div>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <p>
+                                <strong>
+                                    Created By
+                                </strong>
+                            </p>
+                            @Html.EditorFor(model => model.CreatedBy, new { htmlAttributes = new { @class = "form-control", @id = "createdBy" } })
+                        </div>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <p>
+                                <strong>
+                                    Status
+                                </strong>
+                            </p>
+                            @Html.EditorFor(model => model.Status, new { htmlAttributes = new { @class = "form-control", @id = "status" } })
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <p>
+                                <strong>
+                                    Updated Date
+                                </strong>
+                            </p>
+                            <input type="date" class="form-control" id="updatedDate" name="UpdatedDate" value="@(Model.UpdatedDate?.ToString("yyyy-MM-dd"))" />
+                        </div>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <p>
+                                <strong>
+                                    Updated By
+                                </strong>
+                            </p>
+                            @Html.EditorFor(model => model.UpdatedBy, new { htmlAttributes = new { @class = "form-control", @id = "updatedBy" } })
+                        </div>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <p>
+                                <strong>
+                                    Email From
+                                </strong>
+                            </p>
+                            @Html.EditorFor(model => model.EmailFrom, new { htmlAttributes = new { @class = "form-control", @id = "emailFrom" } })
+                        </div>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <p>
+                                <strong>
+                                    Assigned Operator
+                                </strong>
+                            </p>
+                            @Html.EditorFor(model => model.AssignedOperator, new { htmlAttributes = new { @class = "form-control", @id = "assignedOperator" } })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+        <h5 class="card-header" data-bs-toggle="collapse" href="#collapseTwo" role="button" aria-expanded="true" aria-controls="collapseTwo">Order Information - Header</h5>
+        <div class="no-padding accordion-collapse collapse show" id="collapseTwo">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <p>
+                                <strong>
+                                    PO Number
+                                </strong>
+                            </p>
+                            @Html.EditorFor(model => model.PONumber, new { htmlAttributes = new { @class = "form-control", @id = "poNumber" } })
+                        </div>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <p>
+                                <strong>
+                                    Order Type
+                                </strong>
+                            </p>
+                            @Html.DropDownListFor(model => model.OrderType, Model.OrderTypes?.Select(item => new SelectListItem
+                            {
+                                Value = item.Id.ToString(),
+                                Text = item.Name
+                            }) ?? new List<SelectListItem>(), "Select", new { @class = "form-control", @id = "orderType" })
+                        </div>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <p>
+                                <strong>
+                                    Order Status
+                                </strong>
+                            </p>
+                            @Html.DropDownListFor(model => model.OrderStatus, Model.OrderStatuses?.Select(item => new SelectListItem
+                            {
+                                Value = item.Id.ToString(),
+                                Text = item.Name
+                            }) ?? new List<SelectListItem>(), "Select", new { @class = "form-control", @id = "orderStatus" })
+                        </div>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <p>
+                                <strong>
+                                    NF Type
+                                </strong>
+                            </p>
+                            @Html.DropDownListFor(model => model.NFType, Model.NFTypes?.Select(item => new SelectListItem
+                            {
+                                Value = item.Id.ToString(),
+                                Text = item.Name
+                            }) ?? new List<SelectListItem>(), "Select", new { @class = "form-control", @id = "nfType" })
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+                
+            <div class="card-body">
+                <div class="row">
+
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <p>
+                                <strong>
+                                    Customer Name
+                                </strong>
+                            </p>
+                            @Html.EditorFor(model => model.CustomerName, new { htmlAttributes = new { @class = "form-control", @id = "customerName", @placeholder = "Enter customer name" } })
+                        </div>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <div class="form-group">
+                            <p>
+                                <strong>
+                                    DMU
+                                </strong>
+                            </p>
+                            @Html.EditorFor(model => model.DMU, new { htmlAttributes = new { @class = "form-control", @id = "dmu" } })
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <p>
+                            <strong>
+                                Country
+                            </strong>
+                        </p>
+                        @Html.DropDownListFor(model => model.CountryId, Model.Countries.Select(item => new SelectListItem
+                        {
+                            Value = item.Id.ToString(),
+                            Text = item.Name
+                        }), "Select Country", new { @class = "form-control", @id = "countryId" })
+                    </div>
+                </div>
+
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <p>
+                            <strong>
+                                BU
+                            </strong>
+                        </p>
+                        @Html.EditorFor(model => model.BU, new { htmlAttributes = new { @class = "form-control", @id = "bu" } })
+                    </div>
+                </div>
+
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <p>
+                            <strong>
+                                PO Date
+                            </strong>
+                        </p>
+                        <input type="date" class="form-control" id="poDate" name="PODate" value="@(Model.PODate?.ToString("yyyy-MM-dd"))" />
+                    </div>
+                </div>
+
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <p>
+                            <strong>
+                                Segment
+                            </strong>
+                        </p>
+                        @Html.DropDownListFor(model => model.Segment, Model.CustomerSegments?.Select(item => new SelectListItem
+                        {
+                            Value = item.Id.ToString(),
+                            Text = item.Name
+                        }) ?? new List<SelectListItem>(), "Select", new { @class = "form-control", @id = "segment" })
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <p>
+                            <strong>
+                                Bill Ahead
+                            </strong>
+                        </p>
+                        @Html.EditorFor(model => model.BillAhead, new { htmlAttributes = new { @class = "form-control", @id = "billAhead" } })
+                    </div>
+                </div>
+
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <p>
+                            <strong>
+                                ISR Name
+                            </strong>
+                        </p>
+                        @Html.EditorFor(model => model.ISRName, new { htmlAttributes = new { @class = "form-control", @id = "isrName" } })
+                    </div>
+                </div>
+
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <p>
+                            <strong>
+                                Region
+                            </strong>
+                        </p>
+                        @Html.EditorFor(model => model.Region, new { htmlAttributes = new { @class = "form-control", @id = "region" } })
+                    </div>
+                </div>
+
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <p>
+                            <strong>
+                                UF
+                            </strong>
+                        </p>
+                        @Html.EditorFor(model => model.UF, new { htmlAttributes = new { @class = "form-control", @id = "uf" } })
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <p>
+                            <strong>
+                                Replacement Type
+                            </strong>
+                        </p>
+                        @Html.EditorFor(model => model.ReplacementType, new { htmlAttributes = new { @class = "form-control", @id = "replacementType" } })
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <div class="card" style="margin-bottom:10px">
+        <h5 class="card-header" data-bs-toggle="collapse" href="#collapseThree" role="button" aria-expanded="true" aria-controls="collapseThree">Attachments</h5>
+        <div class="no-padding accordion-collapse collapse show" id="collapseThree">
+            <div class="card-body">
+                <!-- Formulário para Adicionar Anexo -->
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="card" style="margin-bottom: 15px;">
+                            <div class="card-header">
+                                <h6 class="mb-0"><strong>Add New Attachment</strong></h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <p>
+                                <strong>
+                                                    File
+                                </strong>
+                            </p>
+                                            <div class="file-upload-container">
+                                                <input type="file" id="fileInput" class="form-control" accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.txt" />
+                                                <div class="file-upload-info">
+                                                    <small class="text-muted">Accepted formats: PDF, DOC, DOCX, XLS, XLSX, JPG, JPEG, PNG, TXT (Maximum 10MB)</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                        </div>
+                    </div>
+
+                                <div class="row">
+                                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <p>
+                                <strong>
+                                                    Customer PO
+                                </strong>
+                            </p>
+                                            <input type="text" id="attachmentCustomerPO" class="form-control" placeholder="Enter Customer PO" />
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="form-group">
+                                            <p>
+                                                <strong>
+                                                    Description
+                                                </strong>
+                                            </p>
+                                            <input type="text" id="attachmentDescricao" class="form-control" placeholder="Enter description" />
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="form-group">
+                                            <p>
+                                                <strong>
+                                                    Comments
+                                                </strong>
+                                            </p>
+                                            <textarea id="attachmentComentarios" class="form-control" rows="2" placeholder="Enter comments"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <button type="button" id="addAttachment" class="btn btn-primary">
+                                            <i class="fas fa-plus"></i> Add Attachment
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabela de Anexos -->
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="form-group">
+                            <p>
+                                <strong>
+                                    Added Attachments
+                                </strong>
+                            </p>
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover" id="attachmentsTable">
+                                    <thead class="table-dark">
+                                        <tr>
+                                <th>File</th>
+                                <th>Customer PO</th>
+                                <th>Description</th>
+                                <th>Comments</th>
+                                <th>Type</th>
+                                <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="attachmentsTableBody">
+                                        <!-- Attachments will be added dynamically here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    @await Html.PartialAsync("OrderInformationItem", Model)
+
+    <div class="card" style="margin-bottom:10px">
+        <h5 class="card-header" data-bs-toggle="collapse" href="#collapseAudit" role="button" aria-expanded="true" aria-controls="collapseAudit" style="color: red;">Extra Order Information - Audit Section</h5>
+        <div class="no-padding accordion-collapse collapse show" id="collapseAudit">
+            <div class="card-body">
+                <!-- Add SAP Order Button -->
+                <div class="row mb-3">
+                    <div class="col-sm-12">
+                        <button type="button" class="btn btn-primary btn-sm" id="addSapOrder">
+                            <i class="fas fa-plus"></i> Add SAP Order
+                        </button>
+                    </div>
+                </div>
+
+                <!-- SAP Orders Container -->
+                <div id="sapOrdersContainer">
+                    @{
+                        var sapOrdersCount = Model.SAPOrders?.Count ?? 0;
+                        if (sapOrdersCount == 0)
+                        {
+                            sapOrdersCount = 1;
+                        }
+                    }
+                    @for (int i = 0; i < sapOrdersCount; i++)
+                    {
+                        <div class="card mb-3 sap-order-card" data-index="@i">
+                            <div class="card-header">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-0"><strong>SAP Order #@(i + 1)</strong></h6>
+                                    <button type="button" class="btn btn-danger btn-sm remove-sap-order" data-saporder-index="@i" title="Remove SAP Order">
+                                        <i class="fas fa-trash"></i> Remove
+                                    </button>
+                                    </div>
+                                </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <p>
+                                                <strong>SAP Order Number</strong>
+                                            </p>
+                                            @if (Model.SAPOrders != null && i < Model.SAPOrders.Count)
+                                            {
+                                                @Html.EditorFor(model => model.SAPOrders[i].SAPOrderNumber, new { htmlAttributes = new { @class = "form-control", @id = $"sapOrders_{i}__SAPOrderNumber", @name = $"SAPOrders[{i}].SAPOrderNumber" } })
+                                            }
+                                            else
+                                            {
+                                                <input class="form-control" id="sapOrders_@(i)__SAPOrderNumber" name="SAPOrders[@i].SAPOrderNumber" type="text" value="" />
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-2">
+                                        <div class="form-group">
+                                            <p>
+                                                <strong>Delivery Number</strong>
+                                            </p>
+                                            @if (Model.SAPOrders != null && i < Model.SAPOrders.Count)
+                                            {
+                                                @Html.EditorFor(model => model.SAPOrders[i].DeliveryNumber, new { htmlAttributes = new { @class = "form-control", @id = $"sapOrders_{i}__DeliveryNumber", @name = $"SAPOrders[{i}].DeliveryNumber" } })
+                                            }
+                                            else
+                                            {
+                                                <input class="form-control" id="sapOrders_@(i)__DeliveryNumber" name="SAPOrders[@i].DeliveryNumber" type="text" value="" />
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="form-group">
+                                            <p>
+                                                <strong>Invoice Number</strong>
+                                            </p>
+                                            @if (Model.SAPOrders != null && i < Model.SAPOrders.Count)
+                                            {
+                                                @Html.EditorFor(model => model.SAPOrders[i].InvoiceNumber, new { htmlAttributes = new { @class = "form-control", @id = $"sapOrders_{i}__InvoiceNumber", @name = $"SAPOrders[{i}].InvoiceNumber" } })
+                                            }
+                                            else
+                                            {
+                                                <input class="form-control" id="sapOrders_@(i)__InvoiceNumber" name="SAPOrders[@i].InvoiceNumber" type="text" value="" />
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="form-group">
+                                            <p>
+                                                <strong>NF Number</strong>
+                                            </p>
+                                            @if (Model.SAPOrders != null && i < Model.SAPOrders.Count)
+                                            {
+                                                @Html.EditorFor(model => model.SAPOrders[i].NFNumber, new { htmlAttributes = new { @class = "form-control", @id = $"sapOrders_{i}__NFNumber", @name = $"SAPOrders[{i}].NFNumber" } })
+                                            }
+                                            else
+                                            {
+                                                <input class="form-control" id="sapOrders_@(i)__NFNumber" name="SAPOrders[@i].NFNumber" type="text" value="" />
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="form-group">
+                                            <p>
+                                                <strong>NF Date</strong>
+                                            </p>
+                                            @if (Model.SAPOrders != null && i < Model.SAPOrders.Count)
+                                            {
+                                                @Html.EditorFor(model => model.SAPOrders[i].NFDate, new { htmlAttributes = new { @type = "date", @class = "form-control", @id = $"sapOrders_{i}__NFDate", @name = $"SAPOrders[{i}].NFDate" } })
+                                            }
+                                            else
+                                            {
+                                                <input class="form-control" id="sapOrders_@(i)__NFDate" name="SAPOrders[@i].NFDate" type="date" value="" />
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="form-group">
+                                            <p>
+                                                <strong>Net Amount</strong>
+                                            </p>
+                                            @if (Model.SAPOrders != null && i < Model.SAPOrders.Count)
+                                            {
+                                                @Html.EditorFor(model => model.SAPOrders[i].NetAmount, new { htmlAttributes = new { @class = "form-control", @id = $"sapOrders_{i}__NetAmount", @name = $"SAPOrders[{i}].NetAmount" } })
+                                            }
+                                            else
+                                            {
+                                                <input class="form-control" id="sapOrders_@(i)__NetAmount" name="SAPOrders[@i].NetAmount" type="number" step="0.01" value="" />
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <div class="form-group">
+                                            <p>
+                                                <strong>Total Order Amount</strong>
+                                            </p>
+                                            @if (Model.SAPOrders != null && i < Model.SAPOrders.Count)
+                                            {
+                                                @Html.EditorFor(model => model.SAPOrders[i].TotalOrderAmount, new { htmlAttributes = new { @class = "form-control", @id = $"sapOrders_{i}__TotalOrderAmount", @name = $"SAPOrders[{i}].TotalOrderAmount" } })
+                                            }
+                                            else
+                                            {
+                                                <input class="form-control" id="sapOrders_@(i)__TotalOrderAmount" name="SAPOrders[@i].TotalOrderAmount" type="number" step="0.01" value="" />
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="card-body">
+                <!-- Comments -->
+                <div class="row">
+                    <div class="col-sm-12">
+                        <h6><strong>Comments</strong></h6>
+                    </div>
+                </div>
+                <div id="commentsContainer">
+                    @{
+                        var commentsCount = Model.Comments?.Count ?? 0;
+                        if (commentsCount == 0)
+                        {
+                            commentsCount = 1;
+                        }
+                    }
+                    @for (int i = 0; i < commentsCount; i++)
+                    {
+                        <div class="row comment-row" data-index="@i">
+                            <div class="col-sm-11">
+                                <div class="form-group">
+                                    <p>
+                                        <strong>Comment @(i + 1)</strong>
+                                    </p>
+                                    @if (Model.Comments != null && i < Model.Comments.Count)
+                                    {
+                                        @Html.TextAreaFor(model => model.Comments[i], new { @class = "form-control", @id = $"comments_{i}", @name = $"Comments[{i}]", @rows = "2" })
+                                    }
+                                    else
+                                    {
+                                        <textarea class="form-control" id="comments_@(i)" name="Comments[@i]" rows="2"></textarea>
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-sm-1">
+                                <div class="form-group">
+                                    <p>&nbsp;</p>
+                                    <button type="button" class="btn btn-success btn-sm add-comment" title="Add Comment">
+                                        +
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Historic Card -->
+    <div class="card" style="margin-bottom:10px">
+        <h5 class="card-header" data-bs-toggle="collapse" href="#collapseHistoric" role="button" aria-expanded="true" aria-controls="collapseHistoric">Historic</h5>
+        <div class="no-padding accordion-collapse collapse show" id="collapseHistoric">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Created Date</th>
+                                <th>Created By</th>
+                                <th>Status</th>
+                                <th>Comments</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historic-table-body">
+                            <!-- Historic entries will be populated here -->
+                            @if (Model.HistoricEntries != null && Model.HistoricEntries.Any())
+                            {
+                                @foreach (var entry in Model.HistoricEntries)
+                                {
+                                    <tr>
+                                        <td>@(entry.CreatedDate?.ToString("dd/MM/yyyy HH:mm"))</td>
+                                        <td>@entry.CreatedBy</td>
+                                        <td>@entry.Status</td>
+                                        <td>@entry.Comments</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted">
+                                        <em>Nenhum registro de histórico encontrado</em>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div align="right">
+        <p>
+            <input type="submit" value="@(string.IsNullOrEmpty(Model.ID) ? "Save ONL Ticket" : "Update ONL Ticket")" class="btn btn-success" id="idSave" />
+            @Html.ActionLink("Back to List", "Index", "OnlTicket", new { area = "Logistic" }, new { @class = "btn btn-warning" })
+        </p>
+    </div>
+}
+
+<script>
+    var orderItemIndex = 0;
+    var sapOrderIndex = @(Model.SAPOrders?.Count > 0 ? Model.SAPOrders.Count : 2);
+    var commentIndex = @(Model.Comments?.Count > 0 ? Model.Comments.Count : 1);
+
+    // Old JavaScript removed - now using new hierarchical structure
+
+    // Add new comment
+    $(document).on('click', '.add-comment', function() {
+        var newRow = `
+            <div class="row comment-row" data-index="${commentIndex}">
+                <div class="col-sm-11">
+                    <div class="form-group">
+                        <p><strong>Comment ${commentIndex + 1}</strong></p>
+                        <textarea class="form-control" id="comments_${commentIndex}" name="Comments[${commentIndex}]" rows="2"></textarea>
+                    </div>
+                </div>
+                            <div class="col-sm-1">
+                                <div class="form-group">
+                                    <p>&nbsp;</p>
+                                    <button type="button" class="btn btn-success btn-sm add-comment" title="Add Comment">
+                                        +
+                                    </button>
+                                </div>
+                            </div>
+            </div>
+        `;
+        $('#commentsContainer').append(newRow);
+        commentIndex++;
+    });
+
+    // Add new SAP Order
+    $(document).on('click', '#addSapOrder', function() {
+        var newSapOrderHtml = `
+            <div class="card mb-3 sap-order-card" data-index="${sapOrderIndex}">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0"><strong>SAP Order #${sapOrderIndex + 1}</strong></h6>
+                        <button type="button" class="btn btn-danger btn-sm remove-sap-order" data-saporder-index="${sapOrderIndex}" title="Remove SAP Order">
+                            <i class="fas fa-trash"></i> Remove
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <p>
+                                    <strong>SAP Order Number</strong>
+                                </p>
+                                <input class="form-control" id="sapOrders_${sapOrderIndex}__SAPOrderNumber" name="SAPOrders[${sapOrderIndex}].SAPOrderNumber" type="text" value="" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="form-group">
+                                <p>
+                                    <strong>Delivery Number</strong>
+                                </p>
+                                <input class="form-control" id="sapOrders_${sapOrderIndex}__DeliveryNumber" name="SAPOrders[${sapOrderIndex}].DeliveryNumber" type="text" value="" />
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="form-group">
+                                <p>
+                                    <strong>Invoice Number</strong>
+                                </p>
+                                <input class="form-control" id="sapOrders_${sapOrderIndex}__InvoiceNumber" name="SAPOrders[${sapOrderIndex}].InvoiceNumber" type="text" value="" />
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="form-group">
+                                <p>
+                                    <strong>NF Number</strong>
+                                </p>
+                                <input class="form-control" id="sapOrders_${sapOrderIndex}__NFNumber" name="SAPOrders[${sapOrderIndex}].NFNumber" type="text" value="" />
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="form-group">
+                                <p>
+                                    <strong>NF Date</strong>
+                                </p>
+                                <input class="form-control" id="sapOrders_${sapOrderIndex}__NFDate" name="SAPOrders[${sapOrderIndex}].NFDate" type="date" value="" />
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="form-group">
+                                <p>
+                                    <strong>Net Amount</strong>
+                                </p>
+                                <input class="form-control" id="sapOrders_${sapOrderIndex}__NetAmount" name="SAPOrders[${sapOrderIndex}].NetAmount" type="number" step="0.01" value="" />
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="form-group">
+                                <p>
+                                    <strong>Total Order Amount</strong>
+                                </p>
+                                <input class="form-control" id="sapOrders_${sapOrderIndex}__TotalOrderAmount" name="SAPOrders[${sapOrderIndex}].TotalOrderAmount" type="number" step="0.01" value="" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        $('#sapOrdersContainer').append(newSapOrderHtml);
+        sapOrderIndex++;
+    });
+
+    // Remove SAP Order
+    $(document).on('click', '.remove-sap-order', function() {
+        $(this).closest('.sap-order-card').remove();
+        updateSapOrderNumbers();
+    });
+
+    // Update SAP Order numbers
+    function updateSapOrderNumbers() {
+        $('.sap-order-card').each(function(index) {
+            $(this).find('.card-header h6 strong').text(`SAP Order #${index + 1}`);
+            $(this).find('.remove-sap-order').data('saporder-index', index);
+            $(this).attr('data-index', index);
+        });
+    }
+
+    $("#idSave").on("click", function () {
+        var logNumber = $('#logNumber').val();
+        var createdDate = $('#createdDate').val();
+        var createdBy = $('#createdBy').val();
+        var status = $('#status').val();
+        var emailFrom = $('#emailFrom').val();
+        var assignedOperator = $('#assignedOperator').val();
+
+        var poNumber = $('#poNumber').val();
+        var orderType = $('#orderType').val();
+        var customerName = $('#customerName').val();
+        var dmu = $('#dmu').val();
+        var countryId = $('#countryId').val();
+        var bu = $('#bu').val();
+        var poDate = $('#poDate').val();
+        var segment = $('#segment').val();
+        var billAhead = $('#billAhead').val();
+        var isrName = $('#isrName').val();
+        var region = $('#region').val();
+        var uf = $('#uf').val();
+        var nfType = $('#nfType').val();
+        var replacementType = $('#replacementType').val();
+
+        var customerPO = $('#customerPO').val();
+        var descricao = $('#descricao').val();
+        var comentarios = $('#comentarios').val();
+
+        // Basic validations
+        if (logNumber === "") {
+            $('#idAlert').text('Log Number must be set');
+            $("#idAlert").parent().css("display", "block");
+            $('#idAlert').show();
+            return;
+        }
+
+        if (createdBy === "") {
+            $('#idAlert').text('Created By must be set');
+            $("#idAlert").parent().css("display", "block");
+            $('#idAlert').show();
+            return;
+        }
+
+        if (status === "") {
+            $('#idAlert').text('Status must be set');
+            $("#idAlert").parent().css("display", "block");
+            $('#idAlert').show();
+            return;
+        }
+
+        if (poNumber === "") {
+            $('#idAlert').text('PO Number must be set');
+            $("#idAlert").parent().css("display", "block");
+            $('#idAlert').show();
+            return;
+        }
+
+        if (customerName === "") {
+            $('#idAlert').text('Customer Name must be set');
+            $("#idAlert").parent().css("display", "block");
+            $('#idAlert').show();
+            return;
+        }
+
+        // New fields validations
+        var orderId = $('#orderId').val();
+        if (orderId === "") {
+            $('#idAlert').text('Order ID must be set');
+            $("#idAlert").parent().css("display", "block");
+            $('#idAlert').show();
+            return;
+        }
+
+        // Validate if at least one Sold To was added
+        var soldToCount = $('.sold-to-card').length;
+        if (soldToCount === 0) {
+            $('#idAlert').text('At least one Sold To must be added');
+            $("#idAlert").parent().css("display", "block");
+            $('#idAlert').show();
+            return;
+        }
+
+        // Validate if each Sold To has at least one Ship To
+        var hasValidStructure = true;
+        $('.sold-to-card').each(function() {
+            var shipToCount = $(this).find('.ship-to-card').length;
+            if (shipToCount === 0) {
+                hasValidStructure = false;
+                return false;
+            }
+        });
+
+        if (!hasValidStructure) {
+            $('#idAlert').text('Each Sold To must have at least one Ship To');
+            $("#idAlert").parent().css("display", "block");
+            $('#idAlert').show();
+            return;
+        }
+
+    // If we got here, the form is valid
+        $('#idAlert').hide();
+    
+    // Generate hidden fields for Order Items from tables
+    generateOrderItemHiddenFields();
+    
+    // Debug: Log all form data before submission
+    console.log('=== FORM SUBMISSION DEBUG ===');
+    console.log('Total Sold To Cards:', $('.sold-to-card').length);
+    console.log('Total Ship To Cards:', $('.ship-to-card').length);
+    console.log('Total Order Items Tables:', $('.order-items-table').length);
+    console.log('Sold To Addresses Fields:', $('input[name*="SoldToAddresses"]').length);
+    console.log('Ship To Addresses Fields:', $('input[name*="ShipToAddresses"]').length);
+    console.log('Order Items Fields:', $('input[name*="OrderItems"]').length);
+    
+    // Log each Order Item field
+    $('input[name*="OrderItems"]').each(function() {
+        console.log('Order Item Field:', $(this).attr('name'), '=', $(this).val());
+    });
+    
+    // Log each Ship To field
+    $('input[name*="ShipToAddresses"]').each(function() {
+        console.log('Ship To Field:', $(this).attr('name'), '=', $(this).val());
+    });
+    
+    console.log('=== END FORM SUBMISSION DEBUG ===');
+    });
+
+    // Variables for index control
+    var soldToIndex = @(Model.SoldToAddresses?.Count ?? 0);
+    var shipToIndex = 0;
+    var orderItemIndex = 0;
+    var attachmentIndex = 0;
+    var uploadedFiles = [];
+    
+    // Order Item management variables
+    var orderItems = [];
+    var editingOrderItemIndex = -1;
+
+    // Load existing attachments on page load
+    $(document).ready(function() {
+        loadExistingAttachments();
+        initializeIndexes();
+    });
+
+    // Initialize indexes based on existing data
+    function initializeIndexes() {
+        // Calculate shipToIndex based on existing Ship To elements
+        var maxShipToIndex = 0;
+        $('.ship-to-card').each(function() {
+            var index = parseInt($(this).data('shipto-index') || 0);
+            if (index >= maxShipToIndex) {
+                maxShipToIndex = index + 1;
+            }
+        });
+        shipToIndex = maxShipToIndex;
+
+        // Calculate orderItemIndex based on existing Order Item elements
+        var maxOrderItemIndex = 0;
+        $('.order-item-card').each(function() {
+            var index = parseInt($(this).data('item-index') || 0);
+            if (index >= maxOrderItemIndex) {
+                maxOrderItemIndex = index + 1;
+            }
+        });
+        orderItemIndex = maxOrderItemIndex;
+        
+        // Re-index all elements to ensure consistency
+        reindexAllElements();
+        
+        console.log('Initialized indexes:', {
+            soldToIndex: soldToIndex,
+            shipToIndex: shipToIndex,
+            orderItemIndex: orderItemIndex
+        });
+    }
+
+    // Re-index all elements to ensure consistency
+    function reindexAllElements() {
+        // Re-index Sold To elements
+        $('.sold-to-card').each(function(index) {
+            $(this).attr('data-soldto-index', index);
+            $(this).find('.add-ship-to').data('soldto-index', index);
+            $(this).find('.ship-to-container').data('soldto-index', index);
+            $(this).find('.remove-sold-to').data('soldto-index', index);
+        });
+
+        // Re-index Ship To elements
+        $('.ship-to-card').each(function(index) {
+            $(this).attr('data-shipto-index', index);
+            $(this).find('.add-order-item').data('shipto-index', index);
+            $(this).find('.order-items-container').data('shipto-index', index);
+            $(this).find('.remove-ship-to').data('shipto-index', index);
+        });
+
+        // Re-index Order Item elements
+        $('.order-item-card').each(function(index) {
+            $(this).attr('data-item-index', index);
+            $(this).find('.remove-order-item').data('item-index', index);
+            $(this).find('.card-header h6 strong').text(`Order Item #${index + 1}`);
+        });
+    }
+
+    // Load existing attachments from server data
+    function loadExistingAttachments() {
+        @if (Model.Attachments != null && Model.Attachments.Any())
+        {
+            <text>
+            @foreach (var attachment in Model.Attachments)
+            {
+                // Só carregar anexos que tenham pelo menos CustomerPO, Descricao ou Comentarios preenchidos
+                @if (!string.IsNullOrEmpty(attachment.CustomerPO) || !string.IsNullOrEmpty(attachment.Descricao) || !string.IsNullOrEmpty(attachment.Comentarios))
+                {
+                    <text>
+                    var existingAttachment = {
+                        id: @attachment.Id,
+                        fileName: '@(attachment.CustomerPO ?? "N/A")',
+                        customerPO: '@(attachment.CustomerPO ?? "")',
+                        descricao: '@(attachment.Descricao ?? "")',
+                        comentarios: '@(attachment.Comentarios ?? "")',
+                        type: 'Unknown', // Tipo desconhecido para anexos existentes
+                        uploadDate: new Date(),
+                        isExisting: true // Marcar como anexo existente
+                    };
+                    
+                    uploadedFiles.push(existingAttachment);
+                    addAttachmentToTable(existingAttachment);
+                    addAttachmentHiddenFields(existingAttachment);
+                    </text>
+                }
+            }
+            </text>
+        }
+    }
+
+    // Add new Sold To
+    $(document).on('click', '#addSoldTo', function() {
+        var newSoldToHtml = `
+            <div class="card sold-to-card" style="margin-bottom:10px" data-soldto-index="${soldToIndex}">
+                <div class="card-header" data-bs-toggle="collapse" href="#collapseSoldTo${soldToIndex}" role="button" aria-expanded="true" aria-controls="collapseSoldTo${soldToIndex}">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0"><strong>Sold To<span class="sold-to-cnpj-display"></span></strong></h6>
+                        <button type="button" class="btn btn-danger btn-sm remove-sold-to" data-soldto-index="${soldToIndex}" title="Remove Sold To">
+                            <i class="fas fa-trash"></i> Remove
+                        </button>
+                    </div>
+                </div>
+                <div class="collapse show" id="collapseSoldTo${soldToIndex}">
+                    <div class="card-body sold-to-section">
+                        <!-- Sold To Address Fields -->
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <p><strong>Sold To - CNPJ</strong></p>
+                                    <input class="form-control" id="soldToAddresses_${soldToIndex}__CNPJ" name="SoldToAddresses[${soldToIndex}].CNPJ" type="text" value="">
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <p><strong>Address</strong></p>
+                                    <input class="form-control" id="soldToAddresses_${soldToIndex}__Address" name="SoldToAddresses[${soldToIndex}].Address" type="text" value="">
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <p><strong>Neighborhood</strong></p>
+                                    <input class="form-control" id="soldToAddresses_${soldToIndex}__Neighborhood" name="SoldToAddresses[${soldToIndex}].Neighborhood" type="text" value="">
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <p><strong>City</strong></p>
+                                    <input class="form-control" id="soldToAddresses_${soldToIndex}__City" name="SoldToAddresses[${soldToIndex}].City" type="text" value="">
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <p><strong>Postal Code</strong></p>
+                                    <input class="form-control" id="soldToAddresses_${soldToIndex}__PostalCode" name="SoldToAddresses[${soldToIndex}].PostalCode" type="text" value="">
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <p><strong>State</strong></p>
+                                    <input class="form-control" id="soldToAddresses_${soldToIndex}__State" name="SoldToAddresses[${soldToIndex}].State" type="text" value="">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Add Ship To Button for this Sold To -->
+                        <div class="row mt-3">
+                            <div class="col-sm-12">
+                                <button type="button" class="btn btn-success btn-sm add-ship-to" data-soldto-index="${soldToIndex}">
+                                    <i class="fas fa-plus"></i> Add Ship To
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Ship To Addresses Container for this Sold To -->
+                        <div class="ship-to-container mt-3" data-soldto-index="${soldToIndex}">
+                            <!-- Ship To sections will be added dynamically here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        $('#soldToContainer').append(newSoldToHtml);
+        soldToIndex++;
+        
+        // Update table data attributes to ensure they're correct
+        updateOrderItemsTableIndices();
+    });
+
+    // Remover Sold To
+    $(document).on('click', '.remove-sold-to', function() {
+        $(this).closest('.sold-to-card').remove();
+        reindexAllElements();
+        soldToIndex = $('.sold-to-card').length;
+        console.log('Sold To removed. New soldToIndex:', soldToIndex);
+    });
+
+    // Adicionar novo Ship To para um Sold To específico
+    $(document).on('click', '.add-ship-to', function() {
+        var soldToIdx = $(this).data('soldto-index');
+        var container = $(this).closest('.sold-to-section').find('.ship-to-container');
+        
+        var newShipToHtml = `
+            <div class="card ship-to-card" style="margin-bottom:10px" data-soldto-index="${soldToIdx}" data-shipto-index="${shipToIndex}">
+                <div class="card-header" data-bs-toggle="collapse" href="#collapseShipTo${soldToIdx}_${shipToIndex}" role="button" aria-expanded="true" aria-controls="collapseShipTo${soldToIdx}_${shipToIndex}">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0"><strong>Ship To<span class="ship-to-cnpj-display"></span></strong></h6>
+                        <button type="button" class="btn btn-danger btn-sm remove-ship-to" data-soldto-index="${soldToIdx}" data-shipto-index="${shipToIndex}" title="Remove Ship To">
+                            <i class="fas fa-trash"></i> Remove
+                        </button>
+                    </div>
+                </div>
+                <div class="collapse show" id="collapseShipTo${soldToIdx}_${shipToIndex}">
+                    <div class="card-body ship-to-section">
+                        <!-- Ship To Address Fields -->
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <p><strong>Ship To - CNPJ</strong></p>
+                                    <input class="form-control" id="soldToAddresses_${soldToIdx}__ShipToAddresses_${shipToIndex}__CNPJ" name="SoldToAddresses[${soldToIdx}].ShipToAddresses[${shipToIndex}].CNPJ" type="text" value="">
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <p><strong>Address</strong></p>
+                                    <input class="form-control" id="soldToAddresses_${soldToIdx}__ShipToAddresses_${shipToIndex}__Address" name="SoldToAddresses[${soldToIdx}].ShipToAddresses[${shipToIndex}].Address" type="text" value="">
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <p><strong>Neighborhood</strong></p>
+                                    <input class="form-control" id="soldToAddresses_${soldToIdx}__ShipToAddresses_${shipToIndex}__Neighborhood" name="SoldToAddresses[${soldToIdx}].ShipToAddresses[${shipToIndex}].Neighborhood" type="text" value="">
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <p><strong>City</strong></p>
+                                    <input class="form-control" id="soldToAddresses_${soldToIdx}__ShipToAddresses_${shipToIndex}__City" name="SoldToAddresses[${soldToIdx}].ShipToAddresses[${shipToIndex}].City" type="text" value="">
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <p><strong>Postal Code</strong></p>
+                                    <input class="form-control" id="soldToAddresses_${soldToIdx}__ShipToAddresses_${shipToIndex}__PostalCode" name="SoldToAddresses[${soldToIdx}].ShipToAddresses[${shipToIndex}].PostalCode" type="text" value="">
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <p><strong>State</strong></p>
+                                    <input class="form-control" id="soldToAddresses_${soldToIdx}__ShipToAddresses_${shipToIndex}__State" name="SoldToAddresses[${soldToIdx}].ShipToAddresses[${shipToIndex}].State" type="text" value="">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- SAP Order Number -->
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <p><strong>SAP Order Number</strong></p>
+                                    <input class="form-control" id="soldToAddresses_${soldToIdx}__ShipToAddresses_${shipToIndex}__SAPOrderNumber" name="SoldToAddresses[${soldToIdx}].ShipToAddresses[${shipToIndex}].SAPOrderNumber" type="text" value="">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Order Items Section -->
+                        <div class="card" style="margin-top:10px">
+                            <div class="card-header">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-0"><strong>Order Items</strong></h6>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <!-- Order Item Input Fields -->
+                                <div class="row order-item-input-row">
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <p><strong>Bid / Contract Number</strong></p>
+                                            <input class="form-control order-item-input" id="orderItemBidContractNumber_${soldToIdx}_${shipToIndex}" type="text" value="">
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <p><strong>Part Number</strong></p>
+                                            <input class="form-control order-item-input" id="orderItemPartNumber_${soldToIdx}_${shipToIndex}" type="text" value="">
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <p><strong>Part Number Description</strong></p>
+                                            <input class="form-control order-item-input" id="orderItemPartNumberDescription_${soldToIdx}_${shipToIndex}" type="text" value="">
+                                </div>
+                            </div>
+                            <div class="col-sm-1">
+                                <div class="form-group">
+                                    <p><strong>Qty</strong></p>
+                                            <input class="form-control order-item-input" id="orderItemQty_${soldToIdx}_${shipToIndex}" type="number" value="">
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <p><strong>Unity NET Price</strong></p>
+                                            <input class="form-control order-item-input" id="orderItemUnityNetPrice_${soldToIdx}_${shipToIndex}" type="number" step="0.01" value="">
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="form-group">
+                                    <p><strong>Unit Gross Price</strong></p>
+                                            <input class="form-control order-item-input" id="orderItemUnitGrossPrice_${soldToIdx}_${shipToIndex}" type="number" step="0.01" value="">
+                                </div>
+                            </div>
+                                    <div class="col-sm-1">
+                                        <div class="form-group">
+                                            <p><strong>&nbsp;</strong></p>
+                                            <button type="button" class="btn btn-primary btn-sm add-order-item-btn" data-soldto-index="${soldToIdx}" data-shipto-index="${shipToIndex}">
+                                                <i class="fas fa-plus"></i> Add Order Item
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Order Items Table -->
+                                <div class="mt-3">
+                                    <table class="table table-striped order-items-table" data-soldto-index="${soldToIdx}" data-shipto-index="${shipToIndex}">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th>Bid / Contract Number</th>
+                                                <th>Part Number</th>
+                                                <th>Part Number Description</th>
+                                                <th>Qty</th>
+                                                <th>Unity NET Price</th>
+                                                <th>Unit Gross Price</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="order-items-table-body">
+                                            <!-- Order items will be added dynamically here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        container.append(newShipToHtml);
+        shipToIndex++;
+        
+        // Update table data attributes to ensure they're correct
+        updateOrderItemsTableIndices();
+    });
+
+    // Note: Label updates removed since we now use static labels in OrderInformationItem.cshtml
+
+    // Remover Ship To
+    $(document).on('click', '.remove-ship-to', function() {
+        $(this).closest('.ship-to-card').remove();
+        reindexAllElements();
+        shipToIndex = $('.ship-to-card').length;
+        console.log('Ship To removed. New shipToIndex:', shipToIndex);
+    });
+
+    // Adicionar Order Item para um Ship To específico (sistema de tabela)
+    $(document).on('click', '.add-order-item-btn', function() {
+        var soldToIdx = $(this).data('soldto-index');
+        var shipToIdx = $(this).data('shipto-index');
+        var table = $(this).closest('.card-body').find('.order-items-table');
+        var tbody = table.find('.order-items-table-body');
+        var $cardBody = $(this).closest('.card-body');
+        
+        // Get input values - use more robust selectors within the card context
+        var bidContractNumber = $cardBody.find('input[id*="orderItemBidContractNumber"]').val() || $(`#orderItemBidContractNumber_${soldToIdx}_${shipToIdx}`).val();
+        var partNumber = $cardBody.find('input[id*="orderItemPartNumber"]:not([id*="Description"])').val() || $(`#orderItemPartNumber_${soldToIdx}_${shipToIdx}`).val();
+        var partNumberDescription = $cardBody.find('input[id*="orderItemPartNumberDescription"]').val() || $(`#orderItemPartNumberDescription_${soldToIdx}_${shipToIdx}`).val();
+        var qty = $cardBody.find('input[id*="orderItemQty"]').val() || $(`#orderItemQty_${soldToIdx}_${shipToIdx}`).val();
+        
+        // Helper function to normalize decimal input (handle both comma and dot)
+        function normalizeDecimalInput(value) {
+            if (!value) return '';
+            var strValue = value.toString().trim();
+            
+            
+            // Check if it contains comma - if so, treat it as decimal separator
+            if (strValue.includes(',')) {
+                // Split by comma to separate integer and decimal parts
+                var parts = strValue.split(',');
+                if (parts.length === 2) {
+                    // Join with dot for proper decimal handling
+                    var result = parts[0] + '.' + parts[1];
+                    return result;
+                }
+            }
+            
+            // If no comma or invalid format, return as is
+            return strValue;
+        }
+        
+        // Helper function to validate and fix decimal input
+        function validateDecimalInput(value, fieldName) {
+            if (!value) return '';
+            var strValue = value.toString().trim();
+            
+            
+            // Check if it contains comma - if so, treat it as decimal separator
+            if (strValue.includes(',')) {
+                var parts = strValue.split(',');
+                if (parts.length === 2) {
+                    var result = parts[0] + '.' + parts[1];
+                    return result;
+                } else {
+                    return strValue;
+                }
+            }
+            
+            // If no comma, return as is
+            return strValue;
+        }
+        
+        var unityNetPrice = validateDecimalInput($cardBody.find('input[id*="orderItemUnityNetPrice"]').val() || $(`#orderItemUnityNetPrice_${soldToIdx}_${shipToIdx}`).val(), 'UnityNetPrice');
+        var unitGrossPrice = validateDecimalInput($cardBody.find('input[id*="orderItemUnitGrossPrice"]').val() || $(`#orderItemUnitGrossPrice_${soldToIdx}_${shipToIdx}`).val(), 'UnitGrossPrice');
+        
+        // Debug: Show what values were found
+        console.log('Order Item Validation Debug:', {
+            soldToIdx: soldToIdx,
+            shipToIdx: shipToIdx,
+            bidContractNumber: bidContractNumber,
+            partNumber: partNumber,
+            partNumberDescription: partNumberDescription,
+            qty: qty,
+            unityNetPrice: unityNetPrice,
+            unitGrossPrice: unitGrossPrice
+        });
+        
+        // Validate required fields
+        if (!bidContractNumber || !partNumber || !partNumberDescription || !qty || !unityNetPrice || !unitGrossPrice) {
+            console.log('Validation failed - missing fields:', {
+                bidContractNumber: !bidContractNumber,
+                partNumber: !partNumber,
+                partNumberDescription: !partNumberDescription,
+                qty: !qty,
+                unityNetPrice: !unityNetPrice,
+                unitGrossPrice: !unitGrossPrice
+            });
+            alert('Please fill in all Order Item fields');
+            return;
+        }
+        
+        // Validate decimal values
+        var unityNetPriceNum = parseFloat(unityNetPrice);
+        var unitGrossPriceNum = parseFloat(unitGrossPrice);
+        
+        
+        
+        if (isNaN(unityNetPriceNum) || isNaN(unitGrossPriceNum)) {
+            alert('Please enter valid decimal values for Unity NET Price and Unit Gross Price');
+            return;
+        }
+        
+        // Final validation - ensure values are reasonable
+        if (unityNetPriceNum > 999999 || unitGrossPriceNum > 999999) {
+            alert('Values seem too large. Please check your decimal input (use comma for decimal separator)');
+            return;
+        }
+        
+        // Helper function to format decimal numbers for display
+        function formatDecimalForDisplay(value) {
+            if (!value) return '';
+            console.log('formatDecimalForDisplay input:', value);
+            // Parse the value to ensure it's a valid number
+            var numValue = parseFloat(value);
+            console.log('formatDecimalForDisplay parsed:', numValue);
+            if (isNaN(numValue)) {
+                console.log('formatDecimalForDisplay NaN, returning original:', value);
+                return value;
+            }
+            // Format with 2 decimal places and convert dot to comma
+            var result = numValue.toFixed(2).replace('.', ',');
+            console.log('formatDecimalForDisplay result:', result);
+            return result;
+        }
+        
+        // Check if we're in edit mode
+        if (editingOrderItemIndex >= 0) {
+            // Update existing row
+            var existingRow = tbody.find(`tr[data-item-index="${editingOrderItemIndex}"]`);
+            if (existingRow.length > 0) {
+                var cells = existingRow.find('td');
+                cells.eq(0).text(bidContractNumber);
+                cells.eq(1).text(partNumber);
+                cells.eq(2).text(partNumberDescription);
+                cells.eq(3).text(qty);
+                cells.eq(4).text(formatDecimalForDisplay(unityNetPrice));
+                cells.eq(5).text(formatDecimalForDisplay(unitGrossPrice));
+            }
+        } else {
+            // Add new row
+            var currentItemCount = tbody.find('tr').length;
+            var newItemIndex = currentItemCount;
+            
+            var newRowHtml = `
+                <tr data-item-index="${newItemIndex}">
+                    <td>${bidContractNumber}</td>
+                    <td>${partNumber}</td>
+                    <td>${partNumberDescription}</td>
+                    <td>${qty}</td>
+                    <td>${formatDecimalForDisplay(unityNetPrice)}</td>
+                    <td>${formatDecimalForDisplay(unitGrossPrice)}</td>
+                    <td>
+                        <button type="button" class="btn btn-info btn-sm edit-order-item" data-soldto-index="${soldToIdx}" data-shipto-index="${shipToIdx}" data-item-index="${newItemIndex}" title="Edit Order Item">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button type="button" class="btn btn-danger btn-sm remove-order-item" data-soldto-index="${soldToIdx}" data-shipto-index="${shipToIdx}" data-item-index="${newItemIndex}" title="Remove Order Item">
+                            <i class="fas fa-trash"></i> Remove
+                        </button>
+                    </td>
+                </tr>
+            `;
+            
+            tbody.append(newRowHtml);
+        }
+        
+        // Clear input fields
+        clearOrderItemInputs(soldToIdx, shipToIdx);
+        
+        // Update button text if in edit mode
+        var btn = $(this);
+        if (btn.hasClass('update-mode')) {
+            btn.removeClass('update-mode').html('<i class="fas fa-plus"></i> Add Order Item');
+            editingOrderItemIndex = -1;
+        }
+        
+    });
+
+    // Remove Order Item from table
+    $(document).on('click', '.remove-order-item', function() {
+        var soldToIdx = $(this).data('soldto-index');
+        var shipToIdx = $(this).data('shipto-index');
+        var itemIdx = $(this).data('item-index');
+        
+        // Remove the row
+        $(this).closest('tr').remove();
+        
+        // Re-index remaining rows
+        reindexOrderItemTable(soldToIdx, shipToIdx);
+        
+    });
+    
+    // Edit Order Item
+    $(document).on('click', '.edit-order-item', function() {
+        var soldToIdx = $(this).data('soldto-index');
+        var shipToIdx = $(this).data('shipto-index');
+        var itemIdx = $(this).data('item-index');
+        
+        // Get the row data
+        var row = $(this).closest('tr');
+        var cells = row.find('td');
+        
+        // Helper function to convert comma decimal to dot decimal
+        function convertDecimalFormat(value) {
+            if (!value) return '';
+            var strValue = value.toString().trim();
+            
+            // Check if it contains comma - if so, treat it as decimal separator
+            if (strValue.includes(',')) {
+                // Split by comma to separate integer and decimal parts
+                var parts = strValue.split(',');
+                if (parts.length === 2) {
+                    // Join with dot for proper decimal handling
+                    var result = parts[0] + '.' + parts[1];
+                    return result;
+                }
+            }
+            
+            // If no comma, return as is
+            return strValue;
+        }
+        
+        // Fill input fields with row data
+        $(`#orderItemBidContractNumber_${soldToIdx}_${shipToIdx}`).val(cells.eq(0).text());
+        $(`#orderItemPartNumber_${soldToIdx}_${shipToIdx}`).val(cells.eq(1).text());
+        $(`#orderItemPartNumberDescription_${soldToIdx}_${shipToIdx}`).val(cells.eq(2).text());
+        $(`#orderItemQty_${soldToIdx}_${shipToIdx}`).val(cells.eq(3).text());
+        $(`#orderItemUnityNetPrice_${soldToIdx}_${shipToIdx}`).val(convertDecimalFormat(cells.eq(4).text()));
+        $(`#orderItemUnitGrossPrice_${soldToIdx}_${shipToIdx}`).val(convertDecimalFormat(cells.eq(5).text()));
+        
+        // Change button to update mode
+        var btn = $(`#orderItemBidContractNumber_${soldToIdx}_${shipToIdx}`).closest('.order-item-input-row').find('.add-order-item-btn');
+        btn.addClass('update-mode').html('<i class="fas fa-save"></i> Update Order Item');
+        
+        // Store editing index
+        editingOrderItemIndex = itemIdx;
+        
+    });
+    
+    // Clear Order Item input fields
+    function clearOrderItemInputs(soldToIdx, shipToIdx) {
+        $(`#orderItemBidContractNumber_${soldToIdx}_${shipToIdx}`).val('');
+        $(`#orderItemPartNumber_${soldToIdx}_${shipToIdx}`).val('');
+        $(`#orderItemPartNumberDescription_${soldToIdx}_${shipToIdx}`).val('');
+        $(`#orderItemQty_${soldToIdx}_${shipToIdx}`).val('');
+        $(`#orderItemUnityNetPrice_${soldToIdx}_${shipToIdx}`).val('');
+        $(`#orderItemUnitGrossPrice_${soldToIdx}_${shipToIdx}`).val('');
+    }
+    
+    // Re-index Order Item table rows
+    function reindexOrderItemTable(soldToIdx, shipToIdx) {
+        var table = $(`.order-items-table[data-soldto-index="${soldToIdx}"][data-shipto-index="${shipToIdx}"]`);
+        var tbody = table.find('.order-items-table-body');
+        
+        tbody.find('tr').each(function(index) {
+            $(this).attr('data-item-index', index);
+            $(this).find('.edit-order-item').attr('data-item-index', index);
+            $(this).find('.remove-order-item').attr('data-item-index', index);
+        });
+    }
+    
+    // Generate hidden fields for Order Items from tables
+    function generateOrderItemHiddenFields() {
+        // Remove existing Order Item hidden fields
+        $('input[name*="OrderItems"]').remove();
+        
+        // Debug: Show all tables found
+        console.log('=== GENERATE ORDER ITEM HIDDEN FIELDS DEBUG ===');
+        console.log('Total order-items-table found:', $('.order-items-table').length);
+        
+        // Process each Order Items table
+        $('.order-items-table').each(function(tableIndex) {
+            var $table = $(this);
+            var soldToIdx = $table.data('soldto-index');
+            var shipToIdx = $table.data('shipto-index');
+            
+            // If data attributes are not set, try to determine from parent structure
+            if (soldToIdx === undefined || shipToIdx === undefined) {
+                var $soldToCard = $table.closest('.sold-to-card');
+                var $shipToCard = $table.closest('.ship-to-card');
+                
+                if ($soldToCard.length && $shipToCard.length) {
+                    // Find the index by counting position among siblings
+                    soldToIdx = $('.sold-to-card').index($soldToCard);
+                    shipToIdx = $soldToCard.find('.ship-to-card').index($shipToCard);
+                    
+                    // Update the data attributes for future reference
+                    $table.attr('data-soldto-index', soldToIdx);
+                    $table.attr('data-shipto-index', shipToIdx);
+                    
+                    console.log(`Auto-detected indices for table ${tableIndex}: soldToIdx=${soldToIdx}, shipToIdx=${shipToIdx}`);
+                }
+            }
+            
+            var tbody = $table.find('.order-items-table-body');
+            
+            console.log(`Table ${tableIndex}: soldToIdx=${soldToIdx}, shipToIdx=${shipToIdx}, rows=${tbody.find('tr').length}`);
+            
+            // Only process if we have valid indices
+            if (soldToIdx !== undefined && shipToIdx !== undefined) {
+                tbody.find('tr').each(function(itemIdx) {
+                    var cells = $(this).find('td');
+                
+                // Helper function to convert decimal format for database storage
+                function convertDecimalForDatabase(value) {
+                    if (!value) return '';
+                    
+                    var strValue = value.toString().trim();
+                    
+                    // Check if it contains comma - if so, treat it as decimal separator
+                    if (strValue.includes(',')) {
+                        // Split by comma to separate integer and decimal parts
+                        var parts = strValue.split(',');
+                        if (parts.length === 2) {
+                            // Join with dot for proper decimal handling
+                            var result = parts[0] + '.' + parts[1];
+                            return result;
+                        } else {
+                            return value;
+                        }
+                    }
+                    
+                    // If no comma, return as is
+                    return strValue;
+                }
+                
+                // Get cell values and convert them
+                var unityNetPriceFromTable = cells.eq(4).text();
+                var unitGrossPriceFromTable = cells.eq(5).text();
+                
+                
+                var unityNetPriceForDB = convertDecimalForDatabase(unityNetPriceFromTable);
+                var unitGrossPriceForDB = convertDecimalForDatabase(unitGrossPriceFromTable);
+                
+                
+                // Create hidden fields for this Order Item
+                var hiddenFields = `
+                    <input type="hidden" name="SoldToAddresses[${soldToIdx}].ShipToAddresses[${shipToIdx}].OrderItems[${itemIdx}].BidContractNumber" value="${cells.eq(0).text()}" />
+                    <input type="hidden" name="SoldToAddresses[${soldToIdx}].ShipToAddresses[${shipToIdx}].OrderItems[${itemIdx}].PartNumber" value="${cells.eq(1).text()}" />
+                    <input type="hidden" name="SoldToAddresses[${soldToIdx}].ShipToAddresses[${shipToIdx}].OrderItems[${itemIdx}].PartNumberDescription" value="${cells.eq(2).text()}" />
+                    <input type="hidden" name="SoldToAddresses[${soldToIdx}].ShipToAddresses[${shipToIdx}].OrderItems[${itemIdx}].Qty" value="${cells.eq(3).text()}" />
+                    <input type="hidden" name="SoldToAddresses[${soldToIdx}].ShipToAddresses[${shipToIdx}].OrderItems[${itemIdx}].UnityNetPrice" value="${unityNetPriceForDB}" />
+                    <input type="hidden" name="SoldToAddresses[${soldToIdx}].ShipToAddresses[${shipToIdx}].OrderItems[${itemIdx}].UnitGrossPrice" value="${unitGrossPriceForDB}" />
+                `;
+                
+                console.log('Creating hidden fields for Order Item:', {
+                    soldToIdx: soldToIdx,
+                    shipToIdx: shipToIdx, 
+                    itemIdx: itemIdx,
+                    bidContract: cells.eq(0).text(),
+                    partNumber: cells.eq(1).text()
+                });
+                
+                // Append hidden fields to form
+                $('form').append(hiddenFields);
+                });
+            } else {
+                console.log(`Skipping table ${tableIndex} - invalid indices: soldToIdx=${soldToIdx}, shipToIdx=${shipToIdx}`);
+            }
+        });
+        
+        console.log('=== END GENERATE ORDER ITEM HIDDEN FIELDS DEBUG ===');
+        console.log('Total Order Item hidden fields created:', $('input[name*="OrderItems"]').length);
+    }
+
+    // Update Sold To numbers
+    function updateSoldToNumbers() {
+        $('.sold-to-card').each(function(index) {
+            $(this).find('.card-header h6 strong').text(`Sold To #${index + 1}`);
+            $(this).find('.add-ship-to').data('soldto-index', index);
+            $(this).find('.ship-to-container').data('soldto-index', index);
+            $(this).find('.remove-sold-to').data('soldto-index', index);
+            $(this).attr('data-soldto-index', index);
+        });
+    }
+
+    // Update Ship To numbers
+    function updateShipToNumbers() {
+        $('.ship-to-card').each(function(index) {
+            $(this).find('.card-header h6 strong').text(`Ship To #${index + 1}`);
+            $(this).find('.add-order-item').data('shipto-index', index);
+            $(this).find('.order-items-container').data('shipto-index', index);
+            $(this).find('.remove-ship-to').data('shipto-index', index);
+            $(this).attr('data-shipto-index', index);
+        });
+    }
+    
+    // Update Order Items table indices to ensure correct data attributes
+    function updateOrderItemsTableIndices() {
+        // Force reindex all elements first
+        $('.sold-to-card').each(function(soldToIndex) {
+            var $soldToCard = $(this);
+            
+            // Update sold to card itself
+            $soldToCard.attr('data-soldto-index', soldToIndex);
+            
+            $soldToCard.find('.ship-to-card').each(function(shipToIndex) {
+                var $shipToCard = $(this);
+                
+                // Update ship to card itself
+                $shipToCard.attr('data-soldto-index', soldToIndex);
+                $shipToCard.attr('data-shipto-index', shipToIndex);
+                
+                // Update the table's data attributes
+                var $table = $shipToCard.find('.order-items-table');
+                if ($table.length > 0) {
+                    $table.attr('data-soldto-index', soldToIndex);
+                    $table.attr('data-shipto-index', shipToIndex);
+                    $table.data('soldto-index', soldToIndex);
+                    $table.data('shipto-index', shipToIndex);
+                }
+                
+                // Also update the Add Order Item button
+                var $addBtn = $shipToCard.find('.add-order-item-btn');
+                if ($addBtn.length > 0) {
+                    $addBtn.attr('data-soldto-index', soldToIndex);
+                    $addBtn.attr('data-shipto-index', shipToIndex);
+                    $addBtn.data('soldto-index', soldToIndex);
+                    $addBtn.data('shipto-index', shipToIndex);
+                }
+            });
+        });
+        
+        // Also force update all existing tables that might have wrong indices
+        $('.order-items-table').each(function() {
+            var $table = $(this);
+            var $soldToCard = $table.closest('.sold-to-card');
+            var $shipToCard = $table.closest('.ship-to-card');
+            
+            if ($soldToCard.length && $shipToCard.length) {
+                var correctSoldToIdx = $('.sold-to-card').index($soldToCard);
+                var correctShipToIdx = $soldToCard.find('.ship-to-card').index($shipToCard);
+                
+                $table.attr('data-soldto-index', correctSoldToIdx);
+                $table.attr('data-shipto-index', correctShipToIdx);
+                $table.data('soldto-index', correctSoldToIdx);
+                $table.data('shipto-index', correctShipToIdx);
+            }
+        });
+    }
+
+    // Add attachment
+    $(document).on('click', '#addAttachment', function() {
+        var fileInput = document.getElementById('fileInput');
+        var customerPO = $('#attachmentCustomerPO').val();
+        var descricao = $('#attachmentDescricao').val();
+        var comentarios = $('#attachmentComentarios').val();
+        
+        // Validate if file was selected
+        if (!fileInput.files || fileInput.files.length === 0) {
+            alert('Please select a file.');
+            return;
+        }
+        
+        var file = fileInput.files[0];
+        var maxSize = 10 * 1024 * 1024; // 10MB
+        var allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 
+                           'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                           'image/jpeg', 'image/jpg', 'image/png', 'text/plain'];
+        
+        // Validate size
+        if (file.size > maxSize) {
+            alert(`File ${file.name} is too large. Maximum allowed size: 10MB`);
+            return;
+        }
+        
+        // Validate type
+        if (!allowedTypes.includes(file.type)) {
+            alert(`File type ${file.name} is not allowed.`);
+            return;
+        }
+        
+        // Create attachment object
+        var attachmentData = {
+            id: attachmentIndex++,
+            fileName: file.name,
+            file: file,
+            size: file.size,
+            type: file.type,
+            customerPO: customerPO,
+            descricao: descricao,
+            comentarios: comentarios,
+            uploadDate: new Date()
+        };
+        
+        // Add to list
+        uploadedFiles.push(attachmentData);
+        
+        // Add hidden fields to form for server submission
+        addAttachmentHiddenFields(attachmentData);
+        
+        // Add to table
+        addAttachmentToTable(attachmentData);
+        
+        // Clear form
+        clearAttachmentForm();
+    });
+
+    // Add attachment hidden fields to form
+    function addAttachmentHiddenFields(attachmentData) {
+        var index = uploadedFiles.length - 1;
+        
+        // Create hidden fields for the attachment
+        var hiddenFields = `
+            <input type="hidden" name="Attachments[${index}].CustomerPO" value="${attachmentData.customerPO || ''}" />
+            <input type="hidden" name="Attachments[${index}].Descricao" value="${attachmentData.descricao || ''}" />
+            <input type="hidden" name="Attachments[${index}].Comentarios" value="${attachmentData.comentarios || ''}" />
+        `;
+        
+        // Add to form
+        $('form').append(hiddenFields);
+    }
+
+    // Add attachment to table
+    function addAttachmentToTable(attachmentData) {
+        var typeText = getFileTypeText(attachmentData.type);
+        
+        // Determinar se é arquivo novo ou existente
+        var isExisting = attachmentData.isExisting || (attachmentData.id && attachmentData.id > 0);
+        var downloadButton = isExisting ? 
+            `<button type="button" class="btn btn-success btn-sm me-2 download-attachment" data-attachment-id="${attachmentData.id}">
+                <i class="fas fa-download"></i> Download
+            </button>` : '';
+        
+        var row = `
+            <tr data-attachment-id="${attachmentData.id}">
+                <td>${attachmentData.fileName}</td>
+                <td>${attachmentData.customerPO || '-'}</td>
+                <td>${attachmentData.descricao || '-'}</td>
+                <td>${attachmentData.comentarios || '-'}</td>
+                <td>${typeText}</td>
+                <td>
+                    ${downloadButton}
+                    <button type="button" class="btn btn-danger btn-sm remove-attachment" data-attachment-id="${attachmentData.id}">
+                        <i class="fas fa-trash"></i> Remove
+                    </button>
+                </td>
+            </tr>
+        `;
+        
+        $('#attachmentsTableBody').append(row);
+    }
+
+    // Remove attachment from table
+    $(document).on('click', '.remove-attachment', function() {
+        var attachmentId = $(this).data('attachment-id');
+        
+        // Find attachment index
+        var attachmentIndex = uploadedFiles.findIndex(attachment => attachment.id === attachmentId);
+        
+        // Remove from list
+        uploadedFiles = uploadedFiles.filter(attachment => attachment.id !== attachmentId);
+        
+        // Remove hidden fields
+        $(`input[name="Attachments[${attachmentIndex}].CustomerPO"]`).remove();
+        $(`input[name="Attachments[${attachmentIndex}].Descricao"]`).remove();
+        $(`input[name="Attachments[${attachmentIndex}].Comentarios"]`).remove();
+        
+        // Remove from table
+        $(this).closest('tr').remove();
+        
+        // Reindex remaining hidden fields
+        reindexAttachmentHiddenFields();
+    });
+
+    // Download attachment
+    $(document).on('click', '.download-attachment', function() {
+        var attachmentId = $(this).data('attachment-id');
+        
+        // Criar URL para download
+        var downloadUrl = `/Logistic/OnlTicket/DownloadAttachment/${attachmentId}`;
+        
+        // Abrir download em nova aba
+        window.open(downloadUrl, '_blank');
+    });
+
+    // Reindex attachment hidden fields after removal
+    function reindexAttachmentHiddenFields() {
+        // Remove all existing hidden fields
+        $('input[name^="Attachments["]').remove();
+        
+        // Re-add hidden fields with correct indices
+        uploadedFiles.forEach(function(attachment, index) {
+            var hiddenFields = `
+                <input type="hidden" name="Attachments[${index}].CustomerPO" value="${attachment.customerPO || ''}" />
+                <input type="hidden" name="Attachments[${index}].Descricao" value="${attachment.descricao || ''}" />
+                <input type="hidden" name="Attachments[${index}].Comentarios" value="${attachment.comentarios || ''}" />
+            `;
+            $('form').append(hiddenFields);
+        });
+    }
+
+    // Clear attachment form
+    function clearAttachmentForm() {
+        $('#fileInput').val('');
+        $('#attachmentCustomerPO').val('');
+        $('#attachmentDescricao').val('');
+        $('#attachmentComentarios').val('');
+    }
+
+    // Format file size
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        
+        var k = 1024;
+        var sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        var i = Math.floor(Math.log(bytes) / Math.log(k));
+        
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    // Get file type text
+    function getFileTypeText(mimeType) {
+        var typeMap = {
+            'application/pdf': 'PDF',
+            'application/msword': 'DOC',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'DOCX',
+            'application/vnd.ms-excel': 'XLS',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'XLSX',
+            'image/jpeg': 'JPG',
+            'image/jpg': 'JPG',
+            'image/png': 'PNG',
+            'text/plain': 'TXT'
+        };
+        
+        return typeMap[mimeType] || 'Unknown';
+    }
+
+    // Generate hidden fields for ALL dynamic elements (brute force approach)
+    function generateDynamicHiddenFields() {
+        // Remove existing dynamic hidden fields to avoid duplicates
+        $('input[name*="SoldToAddresses"]:hidden').each(function() {
+            var name = $(this).attr('name');
+            var match = name.match(/SoldToAddresses\[(\d+)\]/);
+            if (match) {
+                var index = parseInt(match[1]);
+                // Remove if index is greater than original cards count
+                var originalCardsCount = $('.sold-to-card[data-original="true"]').length;
+                if (index >= originalCardsCount) {
+                    $(this).remove();
+                }
+            }
+        });
+        
+        // Process ALL Sold To cards
+        $('.sold-to-card').each(function(soldToIndex) {
+            var $soldToCard = $(this);
+            
+            // Skip original cards (they already have proper fields)
+            if ($soldToCard.attr('data-original') === 'true') {
+                return;
+            }
+            
+            // Get Sold To data - try multiple selectors to be sure
+            // IMPORTANTE: Usar seletores específicos para evitar conflitos
+            var cnpj = $soldToCard.find('input[id*="__CNPJ"]').val() || '';
+            var address = $soldToCard.find('input[id*="__Address"]').val() || '';
+            var neighborhood = $soldToCard.find('input[id*="__Neighborhood"]').val() || '';
+            var city = $soldToCard.find('input[id*="__City"]').val() || '';
+            var postalCode = $soldToCard.find('input[id*="__PostalCode"]').val() || '';
+            var state = $soldToCard.find('input[id*="__State"]').val() || '';
+            
+            // Create Sold To hidden fields
+            if (cnpj || address || neighborhood || city || postalCode || state) {
+                var soldToHiddenFields = `
+                    <input type="hidden" name="SoldToAddresses[${soldToIndex}].CNPJ" value="${cnpj}" />
+                    <input type="hidden" name="SoldToAddresses[${soldToIndex}].Address" value="${address}" />
+                    <input type="hidden" name="SoldToAddresses[${soldToIndex}].Neighborhood" value="${neighborhood}" />
+                    <input type="hidden" name="SoldToAddresses[${soldToIndex}].City" value="${city}" />
+                    <input type="hidden" name="SoldToAddresses[${soldToIndex}].PostalCode" value="${postalCode}" />
+                    <input type="hidden" name="SoldToAddresses[${soldToIndex}].State" value="${state}" />
+                `;
+                $('form').append(soldToHiddenFields);
+            }
+            
+            // Process Ship To addresses within this Sold To
+            $soldToCard.find('.ship-to-card').each(function(shipToIndex) {
+                var $shipToCard = $(this);
+                
+                // Get Ship To data - usar seletores específicos
+                var shipToCnpj = $shipToCard.find('input[id*="__CNPJ"]').val() || '';
+                var shipToAddress = $shipToCard.find('input[id*="__Address"]').val() || '';
+                var shipToNeighborhood = $shipToCard.find('input[id*="__Neighborhood"]').val() || '';
+                var shipToCity = $shipToCard.find('input[id*="__City"]').val() || '';
+                var shipToPostalCode = $shipToCard.find('input[id*="__PostalCode"]').val() || '';
+                var shipToState = $shipToCard.find('input[id*="__State"]').val() || '';
+                var sapOrderNumber = $shipToCard.find('input[id*="SAPOrderNumber"]').val() || '';
+                
+                // Create Ship To hidden fields
+                if (shipToCnpj || shipToAddress || shipToNeighborhood || shipToCity || shipToPostalCode || shipToState || sapOrderNumber) {
+                    var shipToHiddenFields = `
+                        <input type="hidden" name="SoldToAddresses[${soldToIndex}].ShipToAddresses[${shipToIndex}].CNPJ" value="${shipToCnpj}" />
+                        <input type="hidden" name="SoldToAddresses[${soldToIndex}].ShipToAddresses[${shipToIndex}].Address" value="${shipToAddress}" />
+                        <input type="hidden" name="SoldToAddresses[${soldToIndex}].ShipToAddresses[${shipToIndex}].Neighborhood" value="${shipToNeighborhood}" />
+                        <input type="hidden" name="SoldToAddresses[${soldToIndex}].ShipToAddresses[${shipToIndex}].City" value="${shipToCity}" />
+                        <input type="hidden" name="SoldToAddresses[${soldToIndex}].ShipToAddresses[${shipToIndex}].PostalCode" value="${shipToPostalCode}" />
+                        <input type="hidden" name="SoldToAddresses[${soldToIndex}].ShipToAddresses[${shipToIndex}].State" value="${shipToState}" />
+                        <input type="hidden" name="SoldToAddresses[${soldToIndex}].ShipToAddresses[${shipToIndex}].SAPOrderNumber" value="${sapOrderNumber}" />
+                    `;
+                    $('form').append(shipToHiddenFields);
+                }
+            });
+        });
+    }
+
+    // Handle form submission
+    $('form').on('submit', function(e) {
+        // Validate all CNPJs first
+        if (!validateAllCNPJs()) {
+            e.preventDefault();
+            return false;
+        }
+        
+        // Prepare CNPJs for saving (convert to numbers only)
+        prepareCNPJsForSaving();
+        
+        // First, ensure all indices are correct
+        updateOrderItemsTableIndices();
+        
+        // Generate hidden fields ONLY for dynamic Sold To and Ship To
+        generateDynamicHiddenFields();
+        
+        // Generate hidden fields for Order Items
+        generateOrderItemHiddenFields();
+        
+        // Form will submit normally after this
+    });
+
+    // CNPJ Mask and Validation Functions
+    function applyCNPJMask(value) {
+        // Remove tudo que não é dígito
+        value = value.replace(/\D/g, '');
+        
+        // Aplica a máscara XX.XXX.XXX/XXXX-XX
+        if (value.length <= 2) {
+            return value;
+        } else if (value.length <= 5) {
+            return value.replace(/(\d{2})(\d+)/, '$1.$2');
+        } else if (value.length <= 8) {
+            return value.replace(/(\d{2})(\d{3})(\d+)/, '$1.$2.$3');
+        } else if (value.length <= 12) {
+            return value.replace(/(\d{2})(\d{3})(\d{3})(\d+)/, '$1.$2.$3/$4');
+        } else {
+            return value.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d+)/, '$1.$2.$3/$4-$5');
+        }
+    }
+
+    function validateCNPJ(cnpj) {
+        // Remove formatação
+        cnpj = cnpj.replace(/\D/g, '');
+        
+        // Verifica se tem exatamente 14 dígitos
+        if (cnpj.length !== 14) return false;
+        
+        // Verifica se todos os dígitos são iguais
+        if (/^(\d)\1{13}$/.test(cnpj)) return false;
+        
+        // Algoritmo oficial de validação CNPJ
+        var digits = cnpj.split('').map(Number);
+        
+        // Primeiro dígito verificador
+        var sum1 = 0;
+        var weights1 = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+        
+        for (var i = 0; i < 12; i++) {
+            sum1 += digits[i] * weights1[i];
+        }
+        
+        var remainder1 = sum1 % 11;
+        var digit1 = remainder1 < 2 ? 0 : 11 - remainder1;
+        
+        if (digits[12] !== digit1) return false;
+        
+        // Segundo dígito verificador
+        var sum2 = 0;
+        var weights2 = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+        
+        for (var i = 0; i < 13; i++) {
+            sum2 += digits[i] * weights2[i];
+        }
+        
+        var remainder2 = sum2 % 11;
+        var digit2 = remainder2 < 2 ? 0 : 11 - remainder2;
+        
+        return digits[13] === digit2;
+    }
+
+    function getOnlyNumbers(value) {
+        return value.replace(/\D/g, '');
+    }
+
+    // Apply CNPJ mask to existing fields
+    $(document).ready(function() {
+        // Apply to existing CNPJ fields
+        $('input[id*="CNPJ"]').each(function() {
+            var $input = $(this);
+            var value = $input.val();
+            if (value) {
+                var maskedValue = applyCNPJMask(value);
+                $input.val(maskedValue);
+                
+                // Update header labels for existing data
+                updateHeaderLabels($input);
+            }
+        });
+    });
+
+    // Event handlers for CNPJ fields
+    $(document).on('input', 'input[id*="CNPJ"]', function() {
+        var $input = $(this);
+        var value = $input.val();
+        var maskedValue = applyCNPJMask(value);
+        $input.val(maskedValue);
+        
+        // Visual validation feedback
+        var numbersOnly = getOnlyNumbers(maskedValue);
+        if (numbersOnly.length === 14) {
+            if (validateCNPJ(numbersOnly)) {
+                $input.removeClass('is-invalid').addClass('is-valid');
+                // Remove completely the invalid feedback message
+                $input.siblings('.invalid-feedback').remove();
+            } else {
+                $input.removeClass('is-valid').addClass('is-invalid');
+                if (!$input.siblings('.invalid-feedback').length) {
+                    $input.after('<div class="invalid-feedback">CNPJ inválido</div>');
+                }
+                $input.siblings('.invalid-feedback').show();
+            }
+        } else if (numbersOnly.length > 0) {
+            $input.removeClass('is-valid is-invalid');
+            $input.siblings('.invalid-feedback').remove();
+        } else {
+            $input.removeClass('is-valid is-invalid');
+            $input.siblings('.invalid-feedback').remove();
+        }
+        
+        // Update header labels dynamically
+        updateHeaderLabels($input);
+    });
+
+    function updateHeaderLabels($input) {
+        var value = $input.val();
+        var $card = $input.closest('.sold-to-card, .ship-to-card');
+        
+        if ($card.hasClass('sold-to-card')) {
+            // Update only the main Sold To card header, not nested headers
+            var $header = $card.find('> .card-header h6 strong');
+            if (value && value.length > 0) {
+                // Apply CNPJ mask to header display
+                var maskedValue = applyCNPJMask(value);
+                $header.html('Sold To - ' + maskedValue);
+            } else {
+                $header.html('Sold To');
+            }
+        } else if ($card.hasClass('ship-to-card')) {
+            // Update only the main Ship To card header, not nested headers
+            var $header = $card.find('> .card-header h6 strong');
+            if (value && value.length > 0) {
+                // Apply CNPJ mask to header display
+                var maskedValue = applyCNPJMask(value);
+                $header.html('Ship To - ' + maskedValue);
+            } else {
+                $header.html('Ship To');
+            }
+        }
+    }
+
+    // Validate all CNPJs before form submission
+    function validateAllCNPJs() {
+        var isValid = true;
+        var invalidCNPJs = [];
+        
+        $('input[id*="CNPJ"]').each(function() {
+            var $input = $(this);
+            var value = $input.val();
+            var numbersOnly = getOnlyNumbers(value);
+            
+            if (numbersOnly.length > 0) {
+                if (numbersOnly.length !== 14 || !validateCNPJ(numbersOnly)) {
+                    isValid = false;
+                    var fieldLabel = $input.closest('.form-group').find('p strong').text() || 'CNPJ';
+                    invalidCNPJs.push(fieldLabel);
+                    $input.removeClass('is-valid').addClass('is-invalid');
+                    if (!$input.siblings('.invalid-feedback').length) {
+                        $input.after('<div class="invalid-feedback">CNPJ inválido</div>');
+                    }
+                    $input.siblings('.invalid-feedback').show();
+                }
+            }
+        });
+        
+        if (!isValid) {
+            showToast('Por favor, corrija os CNPJs inválidos antes de salvar.', 'validation');
+        }
+        
+        return isValid;
+    }
+
+    // Convert CNPJs to numbers only before saving
+    function prepareCNPJsForSaving() {
+        $('input[id*="CNPJ"]').each(function() {
+            var $input = $(this);
+            var value = $input.val();
+            var numbersOnly = getOnlyNumbers(value);
+            
+            // Create a hidden field with numbers only for form submission
+            var name = $input.attr('name');
+            if (name) {
+                // Remove existing hidden field if exists
+                $(`input[name="${name}"][type="hidden"]`).remove();
+                
+                // Add hidden field with numbers only
+                $input.after(`<input type="hidden" name="${name}" value="${numbersOnly}" />`);
+                
+                // Remove name from visible field to avoid duplication
+                $input.removeAttr('name');
+            }
+        });
+    }
+
+    // Toast notification function
+    function showToast(message, type = 'info') {
+        // Remove any existing toast
+        $('.custom-toast').remove();
+        
+        // Determine toast style based on type
+        var bgClass = 'bg-primary';
+        var icon = 'fas fa-info-circle';
+        var title = 'Informação';
+        
+        if (type === 'error') {
+            bgClass = 'bg-danger';
+            icon = 'fas fa-exclamation-triangle';
+            title = 'Erro';
+        } else if (type === 'success') {
+            bgClass = 'bg-success';
+            icon = 'fas fa-check-circle';
+            title = 'Sucesso';
+        } else if (type === 'warning') {
+            bgClass = 'bg-warning text-dark';
+            icon = 'fas fa-exclamation-circle';
+            title = 'Atenção';
+        } else if (type === 'validation') {
+            bgClass = 'bg-danger';
+            icon = 'fas fa-exclamation-triangle';
+            title = 'Validação';
+        } else if (type === 'info') {
+            bgClass = 'bg-info';
+            icon = 'fas fa-info-circle';
+            title = 'Informação';
+        }
+        
+        // Create toast HTML
+        var toastHtml = `
+            <div class="custom-toast position-fixed" style="top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999;">
+                <div class="toast show ${bgClass} text-white" role="alert">
+                    <div class="toast-header ${bgClass} ${bgClass.includes('warning') ? 'text-dark' : 'text-white'} border-0">
+                        <i class="${icon} me-2"></i>
+                        <strong class="me-auto">${title}</strong>
+                        <button type="button" class="btn-close ${bgClass.includes('warning') ? '' : 'btn-close-white'}" onclick="$(this).closest('.custom-toast').remove()"></button>
+                    </div>
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Add toast to page
+        $('body').append(toastHtml);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(function() {
+            $('.custom-toast').fadeOut(500, function() {
+                $(this).remove();
+            });
+        }, 5000);
+    }
+
+    // Função específica para toast de sucesso
+    function showSuccessToast(message) {
+        showToast(message || 'Operação realizada com sucesso!', 'success');
+    }
+</script>
+
+<style>
+    .card-header[data-bs-toggle="collapse"] {
+        cursor: pointer;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+    }
+    
+    .card-header[data-bs-toggle="collapse"]:hover {
+        background-color: #e9ecef;
+    }
+    
+    .card-header:not([data-bs-toggle="collapse"]) {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+    }
+    
+    .sold-to-card {
+        border: 2px solid #007bff;
+        border-radius: 0.375rem;
+        margin-bottom: 15px;
+    }
+    
+    .ship-to-card {
+        border: 1px solid #28a745;
+        border-radius: 0.375rem;
+        margin-bottom: 10px;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    
+    .order-item-card {
+        border: 1px solid #6c757d;
+        border-radius: 0.25rem;
+        margin-bottom: 5px;
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+    
+    .sap-order-card {
+        border: 2px solid #007bff;
+        border-radius: 0.375rem;
+        margin-bottom: 15px;
+    }
+    
+    .remove-sap-order,
+    .remove-sold-to,
+    .remove-ship-to,
+    .remove-order-item {
+        font-size: 0.8rem;
+        padding: 0.25rem 0.5rem;
+        transition: all 0.2s ease-in-out;
+    }
+    
+    .remove-sap-order:hover,
+    .remove-sold-to:hover,
+    .remove-ship-to:hover,
+    .remove-order-item:hover {
+        transform: scale(1.05);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    .ship-to-container {
+        margin-top: 15px;
+    }
+    
+    #soldToContainer {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+    
+    .file-upload-container {
+        position: relative;
+    }
+    
+    .file-upload-container input[type="file"] {
+        padding: 8px;
+        border: 2px dashed #dee2e6;
+        border-radius: 0.375rem;
+        background-color: #f8f9fa;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+    
+    .file-upload-container input[type="file"]:hover {
+        border-color: #007bff;
+        background-color: #e7f3ff;
+    }
+    
+    .file-upload-container input[type="file"]:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        background-color: #e7f3ff;
+    }
+    
+    .file-upload-info {
+        margin-top: 5px;
+    }
+    
+    #attachmentsTable {
+        margin-top: 15px;
+    }
+    
+    #attachmentsTable th {
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+    
+    #attachmentsTable td {
+        vertical-align: middle;
+    }
+    
+    .remove-attachment {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.8rem;
+    }
+    
+    .attachment-form-card {
+        border: 1px solid #dee2e6;
+        border-radius: 0.375rem;
+        background-color: #f8f9fa;
+    }
+    
+    .attachment-form-card .card-header {
+        background-color: #e9ecef;
+        border-bottom: 1px solid #dee2e6;
+    }
+    
+    #attachmentsTable th {
+        white-space: nowrap;
+    }
+    
+    #attachmentsTable td {
+        max-width: 200px;
+        word-wrap: break-word;
+    }
+    
+    #attachmentsTable td:nth-child(4) {
+        max-width: 300px;
+    }
+    
+    .card-header .d-flex {
+        align-items: center;
+    }
+    
+    .card-header h6 {
+        margin: 0;
+        color: #495057;
+    }
+    
+    /* CNPJ Validation Styles */
+    .is-valid {
+        border-color: #28a745 !important;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='m2.3 6.73.4-.4c.2-.2.5-.2.7 0l.1.1c.1.1.1.3 0 .4l-.8.8c-.2.2-.5.2-.7 0l-.8-.8c-.1-.1-.1-.3 0-.4.2-.2.5-.2.7 0l.4.4.8-1.2c.2-.3.6-.4.9-.2.3.2.4.6.2.9l-1.3 1.9c-.1.1-.2.1-.3.1z'/%3e%3c/svg%3e") !important;
+        background-repeat: no-repeat !important;
+        background-position: right calc(0.375em + 0.1875rem) center !important;
+        background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem) !important;
+    }
+    
+    .is-invalid {
+        border-color: #dc3545 !important;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath d='m5.8 4.6 1.4 1.4m0-1.4L5.8 6'/%3e%3c/svg%3e") !important;
+        background-repeat: no-repeat !important;
+        background-position: right calc(0.375em + 0.1875rem) center !important;
+        background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem) !important;
+    }
+    
+    .invalid-feedback {
+        display: block !important;
+        width: 100%;
+        margin-top: 0.25rem;
+        font-size: 0.875em;
+        color: #dc3545;
+    }
+    
+    /* Custom Toast Styles */
+    .custom-toast .toast {
+        min-width: 350px;
+        border-radius: 0.5rem;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        border: none;
+    }
+    
+    .custom-toast .toast-header {
+        padding: 0.75rem 1rem;
+        border-bottom: none;
+        align-items: center;
+    }
+    
+    .custom-toast .toast-header i {
+        font-size: 1.1rem;
+        margin-right: 0.5rem;
+        display: inline-block;
+        width: 16px;
+        text-align: center;
+    }
+    
+    .custom-toast .toast-body {
+        padding: 0.75rem 1rem;
+        font-weight: 500;
+        font-size: 0.95rem;
+    }
+    
+    .custom-toast .btn-close-white {
+        filter: invert(1) grayscale(100%) brightness(200%);
+        opacity: 0.8;
+    }
+    
+    .custom-toast .btn-close-white:hover {
+        opacity: 1;
+    }
+</style>

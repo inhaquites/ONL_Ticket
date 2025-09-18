@@ -1,0 +1,275 @@
+﻿html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 60px;
+}
+body.dark-mode {
+    background-color: #0e1627;
+    color: #f5f5f5;
+
+}
+
+body:not(.dark-mode) {
+    background-color: #f8f9fa;
+    color: #212529;
+
+}
+
+body.dark-mode .card {
+    background: linear-gradient(to right, #1a274a, #202e55);
+    color: #f5f5f5;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+body:not(.dark-mode) .card {
+    background-color: #ffffff;
+    color: #212529;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+#toggleTheme {
+    border-radius: 50%;
+}
+
+.dark-background {
+    background-color: #1d2033 !important;
+}
+
+.card {
+    transition: background-color 0.3s, box-shadow 0.3s;
+    border-radius: 1rem;
+}
+.card:hover {
+    background-color: #f0f8ff !important; /* Cor clara ao passar o mouse */
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4) !important; /* Sombra azul suave */
+    cursor: pointer;
+}
+
+.list-group-item:hover {
+    background-color: #e8f0fe !important; /* azul claro ao passar o mouse */
+    color: #0d6efd; /* azul padrão do Bootstrap */
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.list-group-item:hover a {
+    color: #0d6efd !important; /* muda a cor do texto do link ao passar o mouse */
+    text-decoration: none;
+}
+
+.sidebar {
+    height: 100%;
+    width: 280px;
+    position: fixed;
+    top: 0;
+    left: -280px;
+    background-color: #1d2033;
+    color: white;
+    transition: all 0.3s ease;
+    overflow-y: auto;
+    z-index: 1050;
+    padding: 20px 15px;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+    border-radius: 0px 18px 18px 0px;
+    border-right: 1px solid #444;
+}
+
+/*A forma como ele abre*/
+.sidebar.show {
+    left: 0;
+}
+
+/* Overlay escurecido */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease;
+    z-index: 1050;
+}
+
+/* Mostrar overlay */
+.sidebar-overlay.show {
+    opacity: 1;
+    visibility: visible;
+
+}
+
+.open-sidebar-button {
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.open-sidebar-button i {
+    color: white;
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+.open-sidebar-button:hover {
+    background-color: #e1140a;
+    color: #ffffff;
+    transform: scale(1.05);
+    box-shadow: 0 6px 14px rgba(225, 20, 10, 0.4);
+}
+
+/*Botão de fechar*/
+.sidebar .close-btn {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #bbb;
+    border-radius: 100%;
+}
+
+.sidebar .menu-section {
+    margin-bottom: 18px;
+ }
+
+.sidebar .menu-button {
+    background: none;
+    border: none;
+    color: #ffffff;
+    width: 100%;
+    text-align: left;
+    padding: 10px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s ease;
+}
+
+.sidebar .menu-button:hover {
+    background-color: #3d4147;
+    border-radius: 6px;
+}
+
+.sidebar .submenu {
+    list-style: none;
+    padding-left: 20px;
+    margin-top: 6px;
+}
+
+.sidebar .submenu li {
+   margin-bottom: 8px;
+}
+
+.sidebar .submenu a {
+   color: #cfcfcf;
+   text-decoration: none;
+   font-size: 14px;
+   display: block;
+   padding: 6px 10px;
+   border-radius: 4px;
+   transition: background 0.2s ease, color 0.2s ease;
+   overflow: visible;
+   line-height: 1.6;
+}
+
+.sidebar .submenu a:hover {
+   background-color: #4e545e;
+   color: #fff;
+}
+
+#openSidebar {
+    margin-bottom: 20px;
+}
+
+.main-content.shift {
+    margin-left: 280px;
+    transition: margin-left 0.3s ease;
+}
+
+.hover-bg:hover {
+    background-color: #f0f0f0;
+    color: #000;
+    text-decoration: none;
+}
+
+.navbar {
+    background-color: #d32f2f; /* vermelho Lenovo */
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1.5rem;
+    font-family: Arial, sans-serif;
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+.card-title {
+    font-weight: 600;
+}
+
+.badge {
+    padding: 0.6em 1em;
+    font-size: 1rem;
+}
+
+.logo {
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.icon-group {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    font-size: 1.3rem;
+}
+
+.user-box {
+    padding: 10px;
+    cursor: pointer;
+}
+
+.user-icon {
+    font-size: 1.5rem;
+}
+
+.dropdown .bi {
+    cursor: pointer;
+}
+
+.icon-group i {
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+.icon-group i:hover {
+    opacity: 0.7;
+}
