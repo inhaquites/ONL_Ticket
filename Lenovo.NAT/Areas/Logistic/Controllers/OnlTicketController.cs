@@ -119,6 +119,9 @@ public class OnlTicketController : Controller
                 Console.WriteLine($"  - Primeiro OrderType: ID={model.OrderTypes.First().Id}, Name='{model.OrderTypes.First().Name}'");
             }
 
+            // CORREÇÃO: Limpar TempData de sucesso para evitar toast indevido no Details
+            TempData.Remove("Success");
+            
             return View("Create", model);
         }
         catch (Exception ex)
