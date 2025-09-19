@@ -435,6 +435,90 @@ namespace Lenovo.NAT.Services.Logistic
                 Console.WriteLine("=== ANEXOS REMOVIDOS: Apenas os explicitamente marcados ===");
                 Console.WriteLine("=== ANEXOS NOVOS: Adicionados com dados binários completos ===");
 
+                // 3. ATUALIZAR SOLD TO, SHIP TO E ORDER ITEMS
+                Console.WriteLine("=== ATUALIZANDO ENDEREÇOS E PRODUTOS ===");
+                
+                // CORREÇÃO: Remover na ordem correta das dependências (FK constraints)
+                // 1º: OrderProduct (grandchild - sem dependências)
+                await _orderProductRepository.DeleteByOrderIdAsync(orderId);
+                // 2º: OrderShipTo (child - depende de OrderSoldTO)
+                await _orderShipToRepository.DeleteByOrderIdAsync(orderId);
+                // 3º: OrderSoldTO (parent - é referenciado por OrderShipTo)
+                await _orderSoldTORepository.DeleteByOrderIdAsync(orderId);
+                
+                // Recriar todos os registros com os dados atualizados
+                foreach (var soldToVm in model.SoldToAddresses ?? new List<SoldToViewModel>())
+                {
+                    if (!string.IsNullOrEmpty(soldToVm.CNPJ) || !string.IsNullOrEmpty(soldToVm.Address))
+                    {
+                        var orderSoldTo = new OrderSoldTO
+                        {
+                            IdOrderNotLoaded = orderId,
+                            CreatedOn = DateTime.UtcNow.AddHours(-3),
+                            CreatedBy = model.UpdatedBy ?? "System",
+                            CompanyTaxId = soldToVm.CNPJ ?? "",
+                            Address = soldToVm.Address ?? "",
+                            Neighborhood = soldToVm.Neighborhood ?? "",
+                            City = soldToVm.City ?? "",
+                            PostalCode = soldToVm.PostalCode ?? "",
+                            State = soldToVm.State ?? ""
+                        };
+
+                        var createdSoldTo = await _orderSoldTORepository.CreateAsync(orderSoldTo);
+                        Console.WriteLine($"SoldTo atualizado: ID {createdSoldTo.Id}");
+
+                        // Salvar ShipTo addresses
+                        foreach (var shipToVm in soldToVm.ShipToAddresses ?? new List<ShipToViewModel>())
+                        {
+                            if (!string.IsNullOrEmpty(shipToVm.CNPJ) || !string.IsNullOrEmpty(shipToVm.Address))
+                            {
+                                var orderShipTo = new OrderShipTo
+                                {
+                                    IdOrderNotLoaded = orderId,
+                                    IdOrderSoldTo = createdSoldTo.Id,
+                                    CreatedOn = DateTime.UtcNow.AddHours(-3),
+                                    CreatedBy = model.UpdatedBy ?? "System",
+                                    CompanyTaxId = shipToVm.CNPJ ?? "",
+                                    Address = shipToVm.Address ?? "",
+                                    Neighborhood = shipToVm.Neighborhood ?? "",
+                                    City = shipToVm.City ?? "",
+                                    PostalCode = shipToVm.PostalCode ?? "",
+                                    State = shipToVm.State ?? "",
+                                    SapOrder = shipToVm.SAPOrderNumber ?? "",
+                                    SapOrderService = ""
+                                };
+
+                                var createdShipTo = await _orderShipToRepository.CreateAsync(orderShipTo);
+                                Console.WriteLine($"ShipTo atualizado: ID {createdShipTo.Id}");
+
+                                // Salvar Order Items
+                                foreach (var itemVm in shipToVm.OrderItems ?? new List<OrderItemViewModel>())
+                                {
+                                    if (!string.IsNullOrEmpty(itemVm.PartNumber) || itemVm.Qty > 0)
+                                    {
+                                        var orderProduct = new OrderProduct
+                                        {
+                                            IdOrderShipTo = createdShipTo.Id,
+                                            CreatedOn = DateTime.UtcNow.AddHours(-3),
+                                            CreatedBy = model.UpdatedBy ?? "System",
+                                            BID = itemVm.BidContractNumber ?? "",
+                                            ContractNumber = itemVm.BidContractNumber ?? "",
+                                            PartNumber = itemVm.PartNumber ?? "",
+                                            MTMDescription = itemVm.PartNumberDescription ?? "",
+                                            Quantity = itemVm.Qty ?? 0,
+                                            UnitNetPrice = itemVm.UnityNetPrice ?? 0,
+                                            UnitGrossPrice = itemVm.UnitGrossPrice ?? 0
+                                        };
+
+                                        var createdProduct = await _orderProductRepository.CreateAsync(orderProduct);
+                                        Console.WriteLine($"OrderProduct atualizado: ID {createdProduct.Id}");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
                 Console.WriteLine("UpdateOrderEntities concluído com sucesso!");
             }
             catch (Exception ex)
