@@ -115,16 +115,7 @@ namespace Lenovo.NAT.Infrastructure.Context
         public DbSet<NFType> NFType { get; set; }
         public DbSet<CustomerSegment> CustomerSegment { get; set; }
 
-        // ONL Ticket Entities
-        public DbSet<OnlTicket> OnlTicket { get; set; }
-        public DbSet<OnlTicketAttachment> OnlTicketAttachment { get; set; }
-        public DbSet<OnlTicketSoldTo> OnlTicketSoldTo { get; set; }
-        public DbSet<OnlTicketShipTo> OnlTicketShipTo { get; set; }
-        public DbSet<OnlTicketOrderItem> OnlTicketOrderItem { get; set; }
-        public DbSet<OnlTicketSAPOrder> OnlTicketSAPOrder { get; set; }
-        public DbSet<OnlTicketComment> OnlTicketComment { get; set; }
-
-        // Order Entities (nova estrutura)
+        // Order Entities - MIGRAÇÃO COMPLETA
         public DbSet<OrderNotLoaded> OrderNotLoaded { get; set; }
         public DbSet<OrderAttachment> OrderAttachment { get; set; }
         public DbSet<OrderSoldTO> OrderSoldTO { get; set; }

@@ -47,26 +47,26 @@ public class OnlTicketController : Controller
         filter.AgingBuckets = (await _onlTicketService.GetAgingBuckets()).ToList();
         filter.CreatedByUsers = (await _onlTicketService.GetCreatedByUsers()).ToList();
 
-        // Buscar dados reais do banco
-        var onlTickets = await _onlTicketService.GetAllOnlTicketsAsync();
+        // Buscar dados reais do banco - MIGRADO PARA ORDER
+        var orderNotLoadedList = await _onlTicketService.GetAllOrderNotLoadedAsync();
         
         // Mapear para ViewModel de listagem
-        var onlTicketList = onlTickets.Select(x => new OnlTicketListViewModel
+        var onlTicketList = orderNotLoadedList.Select(x => new OnlTicketListViewModel
         {
-            Id = x.Id,
-            LogNumber = x.LogNumber,
-            Customer = x.CustomerName ?? "",
-            Segment = x.SegmentNavigation?.Name ?? x.Segment ?? "",
-            AssignTo = x.AssignedOperator ?? "",
-            OrderAging = x.PODate?.ToString("dd/MM/yyyy") ?? "",
+            Id = (int)x.Id,
+            LogNumber = x.NumberOrder ?? "",
+            Customer = x.Customer ?? "",
+            Segment = x.Segment ?? "",
+            AssignTo = x.AssignedTo ?? "",
+            OrderAging = x.PODate.ToString("dd/MM/yyyy"),
             AgingBucket = "0-7 days", // TODO: Calcular baseado na data
-            SAPOrder = x.SAPOrders.FirstOrDefault()?.SAPOrderNumber ?? "",
-            TotalCAs = x.SoldToAddresses.Count,
-            CreatedAt = x.CreatedDate,
-            CreatedBy = x.CreatedBy,
-            EmailFrom = x.EmailFrom ?? "",
-            UpdatedAt = x.UpdatedDate,
-            Status = x.Status
+            SAPOrder = "", // TODO: Implementar quando necessário
+            TotalCAs = 0, // TODO: Implementar quando necessário
+            CreatedAt = x.CreatedOn,
+            CreatedBy = x.CreatedBy ?? "",
+            EmailFrom = x.From ?? "",
+            UpdatedAt = x.UpdatedOn,
+            Status = x.OrderStatus ?? ""
         }).ToList();
 
         // Criar modelo paginado

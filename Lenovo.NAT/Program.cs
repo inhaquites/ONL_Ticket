@@ -57,7 +57,6 @@ builder.Services.AddScoped<IOnlTicketService, OnlTicketService>();
 builder.Services.AddTransient<IUserRepository, UserRepository>();
 builder.Services.AddTransient<IPickingRepository, PickingRepository>();
 builder.Services.AddTransient<IAdminRepository, AdminRepository>();
-builder.Services.AddTransient<IOnlTicketRepository, OnlTicketRepository>();
 
 // Novos repositories para entidades Order
 builder.Services.AddTransient<IOrderNotLoadedRepository, OrderNotLoadedRepository>();

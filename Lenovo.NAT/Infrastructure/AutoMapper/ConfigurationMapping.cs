@@ -37,12 +37,11 @@ public class ConfigurationMapping : Profile
         CreateMap<OnlTicketCustomerSegmentViewModel, CustomerSegment>().ReverseMap();
         CreateMap<CountryViewModel, Country>().ReverseMap();
         
-        // ONL Ticket Entities
-        CreateMap<OnlTicketViewModel, OnlTicket>().ReverseMap();
-        CreateMap<OnlTicketAttachmentViewModel, OnlTicketAttachment>().ReverseMap();
-        CreateMap<SoldToViewModel, OnlTicketSoldTo>().ReverseMap();
-        CreateMap<ShipToViewModel, OnlTicketShipTo>().ReverseMap();
-        CreateMap<OrderItemViewModel, OnlTicketOrderItem>().ReverseMap();
-        CreateMap<SAPOrderViewModel, OnlTicketSAPOrder>().ReverseMap();
+        // Order Entities - MIGRAÇÃO COMPLETA
+        CreateMap<OnlTicketViewModel, OrderNotLoaded>().ReverseMap();
+        CreateMap<OnlTicketAttachmentViewModel, OrderAttachment>().ReverseMap();
+        CreateMap<SoldToViewModel, OrderSoldTO>().ReverseMap();
+        CreateMap<ShipToViewModel, OrderShipTo>().ReverseMap();
+        CreateMap<OrderItemViewModel, OrderProduct>().ReverseMap();
     }
 }

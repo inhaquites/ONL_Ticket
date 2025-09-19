@@ -28,15 +28,14 @@ namespace Lenovo.NAT.Services.Logistic
         Task<IEnumerable<string>> GetAgingBuckets();
         Task<IEnumerable<string>> GetCreatedByUsers();
         
-        // New methods for real data
-        Task<IEnumerable<OnlTicket>> GetAllOnlTicketsAsync();
-        Task<OnlTicket?> GetOnlTicketByIdAsync(int id);
+        // Methods for Order entities (migrated from OnlTicket)
+        Task<IEnumerable<OrderNotLoaded>> GetAllOrderNotLoadedAsync();
+        Task<OrderNotLoaded?> GetOrderNotLoadedByIdAsync(long id);
         Task<OrderAttachment?> GetAttachmentByIdAsync(int id);
     }
 
     public class OnlTicketService : IOnlTicketService
     {
-        private readonly IOnlTicketRepository _onlTicketRepository;
         private readonly IOrderNotLoadedRepository _orderNotLoadedRepository;
         private readonly IOrderSoldTORepository _orderSoldTORepository;
         private readonly IOrderShipToRepository _orderShipToRepository;
@@ -45,7 +44,6 @@ namespace Lenovo.NAT.Services.Logistic
         private readonly IMapper _mapper;
 
         public OnlTicketService(
-            IOnlTicketRepository onlTicketRepository,
             IOrderNotLoadedRepository orderNotLoadedRepository,
             IOrderSoldTORepository orderSoldTORepository,
             IOrderShipToRepository orderShipToRepository,
@@ -53,7 +51,6 @@ namespace Lenovo.NAT.Services.Logistic
             IOrderAttachmentRepository orderAttachmentRepository,
             IMapper mapper)
         {
-            _onlTicketRepository = onlTicketRepository;
             _orderNotLoadedRepository = orderNotLoadedRepository;
             _orderSoldTORepository = orderSoldTORepository;
             _orderShipToRepository = orderShipToRepository;
@@ -781,103 +778,15 @@ namespace Lenovo.NAT.Services.Logistic
             }
         }
 
-        // New methods for real data - MIGRADO PARA TABELAS ORDER
-        public async Task<IEnumerable<OnlTicket>> GetAllOnlTicketsAsync()
+        // Methods for Order entities - MIGRAÇÃO COMPLETA
+        public async Task<IEnumerable<OrderNotLoaded>> GetAllOrderNotLoadedAsync()
         {
-            // Buscar dados das novas tabelas Order e mapear para OnlTicket (para compatibilidade com a listagem)
-            var orderNotLoadedList = await _orderNotLoadedRepository.GetAllOrderNotLoadedAsync();
-            
-            var onlTicketList = new List<OnlTicket>();
-            
-            foreach (var order in orderNotLoadedList)
-            {
-                // Buscar dados relacionados
-                var soldTos = await _orderSoldTORepository.GetByOrderIdAsync(order.Id);
-                var shipTos = await _orderShipToRepository.GetByOrderIdAsync(order.Id);
-                var products = await _orderProductRepository.GetByOrderIdAsync(order.Id);
-                
-                var onlTicket = new OnlTicket
-                {
-                    Id = (int)order.Id,
-                    LogNumber = order.NumberOrder,
-                    CreatedDate = order.CreatedOn,
-                    CreatedBy = order.CreatedBy,
-                    UpdatedDate = order.UpdatedOn,
-                    UpdatedBy = order.UpdatedBy,
-                    Status = order.OrderStatus,
-                    EmailFrom = order.From,
-                    AssignedOperator = order.AssignedTo,
-                    PONumber = order.PONumber,
-                    OrderType = order.OrderType,
-                    OrderStatus = order.OrderStatus,
-                    NFType = order.NFType,
-                    CustomerName = order.Customer,
-                    DMU = order.DMU,
-                    Country = order.Country,
-                    CountryId = order.IdCountry,
-                    BU = order.BusinessUnit,
-                    PODate = order.PODate,
-                    Segment = order.Segment,
-                    SegmentId = order.IdSegment,
-                    BillAhead = order.BillAhead,
-                    ISRName = order.ISRName,
-                    Region = order.Region,
-                    UF = order.State,
-                    ReplacementType = order.RecolocationType,
-                    SoldToAddresses = new List<OnlTicketSoldTo>(),
-                    Attachments = new List<OnlTicketAttachment>(),
-                    SAPOrders = new List<OnlTicketSAPOrder>(),
-                    Comments = new List<OnlTicketComment>()
-                };
-                
-                onlTicketList.Add(onlTicket);
-            }
-            
-            return onlTicketList;
+            return await _orderNotLoadedRepository.GetAllOrderNotLoadedAsync();
         }
 
-        public async Task<OnlTicket?> GetOnlTicketByIdAsync(int id)
+        public async Task<OrderNotLoaded?> GetOrderNotLoadedByIdAsync(long id)
         {
-            // Buscar nas novas tabelas Order
-            var order = await _orderNotLoadedRepository.GetOrderNotLoadedByIdAsync(id);
-            if (order == null) return null;
-
-            // Mapear para OnlTicket (compatibilidade)
-            var onlTicket = new OnlTicket
-            {
-                Id = (int)order.Id,
-                LogNumber = order.NumberOrder,
-                CreatedDate = order.CreatedOn,
-                CreatedBy = order.CreatedBy,
-                UpdatedDate = order.UpdatedOn,
-                UpdatedBy = order.UpdatedBy,
-                Status = order.OrderStatus,
-                EmailFrom = order.From,
-                AssignedOperator = order.AssignedTo,
-                PONumber = order.PONumber,
-                OrderType = order.OrderType,
-                OrderStatus = order.OrderStatus,
-                NFType = order.NFType,
-                CustomerName = order.Customer,
-                DMU = order.DMU,
-                Country = order.Country,
-                CountryId = order.IdCountry,
-                BU = order.BusinessUnit,
-                PODate = order.PODate,
-                Segment = order.Segment,
-                SegmentId = order.IdSegment,
-                BillAhead = order.BillAhead,
-                ISRName = order.ISRName,
-                Region = order.Region,
-                UF = order.State,
-                ReplacementType = order.RecolocationType,
-                SoldToAddresses = new List<OnlTicketSoldTo>(),
-                Attachments = new List<OnlTicketAttachment>(),
-                SAPOrders = new List<OnlTicketSAPOrder>(),
-                Comments = new List<OnlTicketComment>()
-            };
-
-            return onlTicket;
+            return await _orderNotLoadedRepository.GetOrderNotLoadedByIdAsync(id);
         }
 
         private int? TryParseInt(string? value)
