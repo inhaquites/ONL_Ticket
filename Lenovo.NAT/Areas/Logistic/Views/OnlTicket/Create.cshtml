@@ -15,6 +15,7 @@
 <hr />
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
@@ -40,6 +41,23 @@
     
     #toggleAllCards i {
         font-size: 0.8rem;
+    }
+    
+    /* Estilos para validação de CEP */
+    .is-valid {
+        border-color: #198754 !important;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23198754' d='m2.3 6.73.4.42 4.4-4.42-.82-.83L2.7 5.5l-1.1-1.1L.78 5.2z'/%3e%3c/svg%3e") !important;
+        background-repeat: no-repeat !important;
+        background-position: right calc(0.375em + 0.1875rem) center !important;
+        background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem) !important;
+    }
+    
+    .is-invalid {
+        border-color: #dc3545 !important;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath d='m5.8 4.6 1.4 1.4m0-1.4-1.4 1.4'/%3e%3c/svg%3e") !important;
+        background-repeat: no-repeat !important;
+        background-position: right calc(0.375em + 0.1875rem) center !important;
+        background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem) !important;
     }
 </style>
 
@@ -994,7 +1012,72 @@
     $(document).ready(function() {
         loadExistingAttachments();
         initializeIndexes();
+        
+        // Verificar se jQuery Mask está disponível
+        if (typeof $.fn.mask === 'function') {
+            applyPostalCodeMasks(); // Aplicar máscara de CEP nos campos existentes
+        } else {
+            // Fallback: aplicar máscara manual
+            applyManualPostalCodeMask();
+        }
     });
+
+    // Função para aplicar máscara de CEP (formato brasileiro: #####-###)
+    function applyPostalCodeMasks() {
+        // Aguardar um pouco para garantir que os elementos estejam no DOM
+        setTimeout(function() {
+            // Aplicar máscara em todos os campos de Postal Code
+            $('input[id*="PostalCode"], input[name*="PostalCode"]').each(function() {
+                var $field = $(this);
+                
+                // Verificar se já tem máscara aplicada
+                if (!$field.hasClass('postal-code-masked')) {
+                    $field.addClass('postal-code-masked');
+                    
+                    // Aplicar máscara
+                    $field.mask('00000-000', {
+                        placeholder: '_____-___',
+                        translation: {
+                            '0': {pattern: /[0-9]/}
+                        }
+                    });
+                    
+                    // Adicionar validação em tempo real
+                    $field.on('input blur', function() {
+                        validatePostalCode(this);
+                    });
+                    
+                    // Limitar a 8 dígitos (máximo)
+                    $field.on('keypress', function(e) {
+                        var currentValue = $(this).val().replace(/\D/g, '');
+                        if (currentValue.length >= 8 && e.which !== 8 && e.which !== 46) {
+                            e.preventDefault();
+                        }
+                    });
+                }
+            });
+        }, 100);
+    }
+
+    // Função para validar CEP (exatamente 8 dígitos)
+    function validatePostalCode(field) {
+        var $field = $(field);
+        var cepValue = $field.val().replace(/\D/g, ''); // Remove tudo que não é dígito
+        
+        // Remover classes de validação anteriores
+        $field.removeClass('is-valid is-invalid');
+        
+        if (cepValue.length === 0) {
+            // Campo vazio - sem validação visual
+            return;
+        } else if (cepValue.length === 8) {
+            // CEP válido - 8 dígitos
+            $field.addClass('is-valid');
+        } else {
+            // CEP inválido - menos ou mais que 8 dígitos
+            $field.addClass('is-invalid');
+        }
+    }
 
     // Initialize indexes based on existing data
     function initializeIndexes() {
@@ -1155,6 +1238,13 @@
         
         $('#soldToContainer').append(newSoldToHtml);
         soldToIndex++;
+        
+        // Aplicar máscara de CEP nos novos campos criados
+        if (typeof $.fn.mask === 'function') {
+            applyPostalCodeMasks();
+        } else {
+            applyManualPostalCodeMask();
+        }
         
         // Update table data attributes to ensure they're correct
         updateOrderItemsTableIndices();
@@ -1318,6 +1408,13 @@
         
         container.append(newShipToHtml);
         shipToIndex++;
+        
+        // Aplicar máscara de CEP nos novos campos criados
+        if (typeof $.fn.mask === 'function') {
+            applyPostalCodeMasks();
+        } else {
+            applyManualPostalCodeMask();
+        }
         
         // Update table data attributes to ensure they're correct
         updateOrderItemsTableIndices();
@@ -2061,6 +2158,12 @@
             return false;
         }
         
+        // Validate all Postal Codes (CEP)
+        if (!validateAllPostalCodes()) {
+            e.preventDefault();
+            return false;
+        }
+        
         // Prepare CNPJs for saving (convert to numbers only)
         prepareCNPJsForSaving();
         
@@ -2244,6 +2347,69 @@
         }
         
         return isValid;
+    }
+
+    // Validação de CEP antes de salvar
+    function validateAllPostalCodes() {
+        var isValid = true;
+        
+        // Verificar todos os campos de Postal Code
+        $('input[id*="PostalCode"]').each(function() {
+            var $field = $(this);
+            var cepValue = $field.val().replace(/\D/g, ''); // Remove tudo que não é dígito
+            
+            if ($field.val() && cepValue.length !== 8) {
+                // CEP preenchido mas inválido
+                $field.addClass('is-invalid');
+                isValid = false;
+            } else if (cepValue.length === 8) {
+                // CEP válido
+                $field.addClass('is-valid');
+            }
+        });
+        
+        if (!isValid) {
+            showToast('Please correct the invalid Postal Codes before saving. CEP must have exactly 8 digits.', 'validation');
+        }
+        
+        return isValid;
+    }
+
+    // Função alternativa para máscara manual de CEP (caso jQuery Mask não funcione)
+    function applyManualPostalCodeMask() {
+        // Aplicar em campos existentes e novos
+        $(document).on('input', 'input[id*="PostalCode"], input[name*="PostalCode"]', function(e) {
+            var $field = $(this);
+            var value = $field.val().replace(/\D/g, ''); // Remove tudo que não é número
+            
+            // Limitar a 8 dígitos
+            if (value.length > 8) {
+                value = value.substring(0, 8);
+            }
+            
+            // Aplicar formatação: #####-###
+            if (value.length > 5) {
+                value = value.substring(0, 5) + '-' + value.substring(5);
+            }
+            
+            // Atualizar campo
+            $field.val(value);
+            
+            // Validar
+            validatePostalCode($field[0]);
+        });
+        
+        // Aplicar máscara nos campos existentes
+        $('input[id*="PostalCode"], input[name*="PostalCode"]').each(function() {
+            var $field = $(this);
+            var value = $field.val().replace(/\D/g, '');
+            
+            if (value.length > 5) {
+                $field.val(value.substring(0, 5) + '-' + value.substring(5));
+            }
+            
+            validatePostalCode(this);
+        });
     }
 
     // Convert CNPJs to numbers only before saving
