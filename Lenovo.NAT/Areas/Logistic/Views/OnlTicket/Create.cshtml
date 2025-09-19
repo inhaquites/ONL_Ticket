@@ -2275,7 +2275,7 @@
         });
         
         if (!isValid) {
-            showToast('Por favor, corrija os CNPJs inválidos antes de salvar.', 'validation');
+            showToast('Please correct the invalid CNPJs before saving.', 'validation');
         }
         
         return isValid;
@@ -2311,42 +2311,40 @@
         // Determine toast style based on type
         var bgClass = 'bg-primary';
         var icon = 'fas fa-info-circle';
-        var title = 'Informação';
+        var title = 'Information';
         
         if (type === 'error') {
             bgClass = 'bg-danger';
             icon = 'fas fa-exclamation-triangle';
-            title = 'Erro';
+            title = 'Error';
         } else if (type === 'success') {
             bgClass = 'bg-success';
             icon = 'fas fa-check-circle';
-            title = 'Sucesso';
+            title = 'Success';
         } else if (type === 'warning') {
             bgClass = 'bg-warning text-dark';
             icon = 'fas fa-exclamation-circle';
-            title = 'Atenção';
+            title = 'Warning';
         } else if (type === 'validation') {
-            bgClass = 'bg-danger';
-            icon = 'fas fa-exclamation-triangle';
-            title = 'Validação';
+            bgClass = 'bg-warning text-dark';
+            icon = 'fas fa-exclamation-circle';
+            title = 'Validation';
         } else if (type === 'info') {
             bgClass = 'bg-info';
             icon = 'fas fa-info-circle';
-            title = 'Informação';
+            title = 'Information';
         }
         
-        // Create toast HTML
+        // Create toast HTML - CENTRALIZADO NO TOPO
         var toastHtml = `
-            <div class="custom-toast position-fixed" style="top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999;">
-                <div class="toast show ${bgClass} text-white" role="alert">
-                    <div class="toast-header ${bgClass} ${bgClass.includes('warning') ? 'text-dark' : 'text-white'} border-0">
-                        <i class="${icon} me-2"></i>
-                        <strong class="me-auto">${title}</strong>
-                        <button type="button" class="btn-close ${bgClass.includes('warning') ? '' : 'btn-close-white'}" onclick="$(this).closest('.custom-toast').remove()"></button>
-                    </div>
-                    <div class="toast-body">
-                        ${message}
-                    </div>
+            <div class="custom-toast toast show position-fixed" style="top: 20px; left: 50%; transform: translateX(-50%); z-index: 1050; min-width: 350px; max-width: 500px;">
+                <div class="toast-header ${bgClass} text-white">
+                    <i class="${icon} me-2"></i>
+                    <strong class="me-auto">${title}</strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+                </div>
+                <div class="toast-body">
+                    ${message}
                 </div>
             </div>
         `;
@@ -2360,11 +2358,18 @@
                 $(this).remove();
             });
         }, 5000);
+        
+        // Manual close functionality
+        $('.custom-toast .btn-close').on('click', function() {
+            $(this).closest('.custom-toast').fadeOut(500, function() {
+                $(this).remove();
+            });
+        });
     }
 
     // Função específica para toast de sucesso
     function showSuccessToast(message) {
-        showToast(message || 'Operação realizada com sucesso!', 'success');
+        showToast(message || 'Operation completed successfully!', 'success');
     }
 </script>
 

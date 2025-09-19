@@ -162,7 +162,7 @@ namespace Lenovo.NAT.Services.Logistic
             {
                 // MIGRADO: Salvar nas novas tabelas Order
                 await SaveToOrderEntities(model);
-                return "ONL Ticket cadastrado com sucesso!";
+                return "ONL Ticket created successfully!";
             }
             catch (Exception ex)
             {
@@ -194,7 +194,7 @@ namespace Lenovo.NAT.Services.Logistic
 
                 // CORRIGIDO: Usar método específico para atualização
                 await UpdateOrderEntities(model, orderId);
-                return "ONL Ticket atualizado com sucesso!";
+                return "ONL Ticket updated successfully!";
             }
             catch (Exception ex)
             {

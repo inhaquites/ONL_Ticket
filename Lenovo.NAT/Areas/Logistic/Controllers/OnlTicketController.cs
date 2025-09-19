@@ -127,7 +127,7 @@ public class OnlTicketController : Controller
         catch (Exception ex)
         {
             Console.WriteLine($"[ERROR] Erro em Details: {ex.Message}");
-            TempData["Error"] = $"Erro ao carregar ONL Ticket: {ex.Message}";
+            TempData["Error"] = $"Error loading ONL Ticket: {ex.Message}";
             return RedirectToAction("Index");
         }
     }
@@ -166,13 +166,13 @@ public class OnlTicketController : Controller
             // Atualizar o ticket no banco de dados
             await _onlTicketService.UpdateOnlTicket(model);
             
-            TempData["Success"] = "ONL Ticket atualizado com sucesso!";
+            TempData["Success"] = "ONL Ticket updated successfully!";
             return RedirectToAction("Index");
         }
         catch (Exception ex)
         {
             // Log do erro (implementar logging adequado)
-            ModelState.AddModelError("", $"Erro ao atualizar ONL Ticket: {ex.Message}");
+            ModelState.AddModelError("", $"Error updating ONL Ticket: {ex.Message}");
             await PopulateDropdowns(model);
             return View("Create", model);
         }
@@ -240,13 +240,13 @@ public class OnlTicketController : Controller
             // Salvar o ticket no banco de dados
             await _onlTicketService.SaveOnlTicket(model);
             
-            TempData["Success"] = "ONL Ticket cadastrado com sucesso!";
+            TempData["Success"] = "ONL Ticket created successfully!";
             return RedirectToAction("Index");
         }
         catch (Exception ex)
         {
             // Log do erro (implementar logging adequado)
-            ModelState.AddModelError("", $"Erro ao salvar ONL Ticket: {ex.Message}");
+            ModelState.AddModelError("", $"Error saving ONL Ticket: {ex.Message}");
             await PopulateDropdowns(model);
             return View(model);
         }
