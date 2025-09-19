@@ -284,7 +284,11 @@ namespace Lenovo.NAT.Services.Logistic
                 Id = a.Id,
                 CustomerPO = a.PONumber,
                 Descricao = a.Description,
-                Comentarios = a.Comments
+                Comentarios = a.Comments,
+                FileName = a.AttachemntFileName, // CORRIGIDO: Mapear nome do arquivo
+                FileExtension = a.FileExtension, // CORRIGIDO: Mapear extensão
+                ContentType = GetContentTypeFromExtension(a.FileExtension), // CORRIGIDO: Mapear content type
+                FileSize = a.Attachment?.Length ?? 0 // CORRIGIDO: Mapear tamanho do arquivo
             }).ToList();
 
             return model;
@@ -506,6 +510,64 @@ namespace Lenovo.NAT.Services.Logistic
                                 }
                             }
                         }
+                    }
+                }
+
+                // CORRIGIDO: Salvar Attachments que estavam sendo ignorados
+                Console.WriteLine($"Salvando {model.Attachments?.Count ?? 0} anexos...");
+                foreach (var attachmentVm in model.Attachments ?? new List<OnlTicketAttachmentViewModel>())
+                {
+                    // Verificar se o anexo tem dados válidos (metadados ou arquivo)
+                    if (!string.IsNullOrEmpty(attachmentVm.CustomerPO) || 
+                        !string.IsNullOrEmpty(attachmentVm.Descricao) || 
+                        !string.IsNullOrEmpty(attachmentVm.Comentarios) ||
+                        !string.IsNullOrEmpty(attachmentVm.FileData))
+                    {
+                        Console.WriteLine($"[DEBUG] Dados do anexo recebidos:");
+                        Console.WriteLine($"  - FileName: '{attachmentVm.FileName}'");
+                        Console.WriteLine($"  - FileExtension: '{attachmentVm.FileExtension}'");
+                        Console.WriteLine($"  - ContentType: '{attachmentVm.ContentType}'");
+                        Console.WriteLine($"  - FileSize: {attachmentVm.FileSize}");
+                        Console.WriteLine($"  - CustomerPO: '{attachmentVm.CustomerPO}'");
+                        Console.WriteLine($"  - Descricao: '{attachmentVm.Descricao}'");
+                        Console.WriteLine($"  - FileData: {(string.IsNullOrEmpty(attachmentVm.FileData) ? "VAZIO" : $"{attachmentVm.FileData.Length} caracteres")}");
+                        
+                        // Converter Base64 para bytes se houver dados do arquivo
+                        byte[] fileBytes = new byte[] { 0x00 }; // Default vazio
+                        if (!string.IsNullOrEmpty(attachmentVm.FileData))
+                        {
+                            try
+                            {
+                                // Remover prefixo data:type/subtype;base64, se existir
+                                var base64Data = attachmentVm.FileData;
+                                if (base64Data.Contains(","))
+                                {
+                                    base64Data = base64Data.Split(',')[1];
+                                }
+                                fileBytes = Convert.FromBase64String(base64Data);
+                                Console.WriteLine($"Arquivo convertido: {fileBytes.Length} bytes");
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine($"Erro ao converter Base64: {ex.Message}");
+                            }
+                        }
+                        
+                        var orderAttachment = new OrderAttachment
+                        {
+                            IdOrderNotLoaded = createdOrder.Id,
+                            CreatedOn = DateTime.UtcNow.AddHours(-3),
+                            CreatedBy = model.CreatedBy ?? "System",
+                            PONumber = attachmentVm.CustomerPO ?? "",
+                            Description = attachmentVm.Descricao ?? "",
+                            Comments = attachmentVm.Comentarios ?? "",
+                            AttachemntFileName = attachmentVm.FileName ?? "unknown_file",
+                            Attachment = fileBytes,
+                            FileExtension = attachmentVm.FileExtension ?? ".txt"
+                        };
+
+                        var createdAttachment = await _orderAttachmentRepository.CreateAsync(orderAttachment);
+                        Console.WriteLine($"Anexo salvo com ID: {createdAttachment.Id}, Nome: {attachmentVm.FileName}");
                     }
                 }
 
@@ -748,6 +810,24 @@ namespace Lenovo.NAT.Services.Logistic
             if (string.IsNullOrEmpty(value)) return null;
             if (int.TryParse(value, out int result)) return result;
             return null;
+        }
+
+        private string GetContentTypeFromExtension(string? fileExtension)
+        {
+            if (string.IsNullOrEmpty(fileExtension)) return "application/octet-stream";
+            
+            return fileExtension.ToLower() switch
+            {
+                ".pdf" => "application/pdf",
+                ".doc" => "application/msword",
+                ".docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                ".xls" => "application/vnd.ms-excel",
+                ".xlsx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                ".jpg" or ".jpeg" => "image/jpeg",
+                ".png" => "image/png",
+                ".txt" => "text/plain",
+                _ => "application/octet-stream"
+            };
         }
     }
 }

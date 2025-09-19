@@ -1787,30 +1787,45 @@
             return;
         }
         
-        // Create attachment object
-        var attachmentData = {
-            id: attachmentIndex++,
-            fileName: file.name,
-            file: file,
-            size: file.size,
-            type: file.type,
-            customerPO: customerPO,
-            descricao: descricao,
-            comentarios: comentarios,
-            uploadDate: new Date()
+        // CORRIGIDO: Ler arquivo como Base64 para envio ao servidor
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            var fileData = e.target.result; // Base64 string
+            
+            // Create attachment object
+            var attachmentData = {
+                id: attachmentIndex++,
+                fileName: file.name,
+                file: file,
+                size: file.size,
+                type: file.type,
+                customerPO: customerPO,
+                descricao: descricao,
+                comentarios: comentarios,
+                uploadDate: new Date(),
+                fileData: fileData, // Incluir dados do arquivo
+                fileExtension: getFileExtension(file.name)
+            };
+            
+            // Add to list
+            uploadedFiles.push(attachmentData);
+            
+            // Add hidden fields to form for server submission
+            addAttachmentHiddenFields(attachmentData);
+            
+            // Add to table
+            addAttachmentToTable(attachmentData);
+            
+            // Clear form
+            clearAttachmentForm();
         };
         
-        // Add to list
-        uploadedFiles.push(attachmentData);
+        reader.onerror = function() {
+            alert('Error reading file. Please try again.');
+        };
         
-        // Add hidden fields to form for server submission
-        addAttachmentHiddenFields(attachmentData);
-        
-        // Add to table
-        addAttachmentToTable(attachmentData);
-        
-        // Clear form
-        clearAttachmentForm();
+        // Read file as data URL (Base64)
+        reader.readAsDataURL(file);
     });
 
     // Add attachment hidden fields to form
@@ -1822,6 +1837,11 @@
             <input type="hidden" name="Attachments[${index}].CustomerPO" value="${attachmentData.customerPO || ''}" />
             <input type="hidden" name="Attachments[${index}].Descricao" value="${attachmentData.descricao || ''}" />
             <input type="hidden" name="Attachments[${index}].Comentarios" value="${attachmentData.comentarios || ''}" />
+            <input type="hidden" name="Attachments[${index}].FileName" value="${attachmentData.fileName || ''}" />
+            <input type="hidden" name="Attachments[${index}].FileData" value="${attachmentData.fileData || ''}" />
+            <input type="hidden" name="Attachments[${index}].FileExtension" value="${attachmentData.fileExtension || ''}" />
+            <input type="hidden" name="Attachments[${index}].ContentType" value="${attachmentData.type || ''}" />
+            <input type="hidden" name="Attachments[${index}].FileSize" value="${attachmentData.size || 0}" />
         `;
         
         // Add to form
@@ -1941,6 +1961,11 @@
         };
         
         return typeMap[mimeType] || 'Unknown';
+    }
+
+    // Get file extension from filename
+    function getFileExtension(fileName) {
+        return '.' + fileName.slice((fileName.lastIndexOf(".") - 1 >>> 0) + 2).toLowerCase();
     }
 
     // Generate hidden fields for ALL dynamic elements (brute force approach)

@@ -8,6 +8,11 @@ public class OnlTicketAttachmentViewModel
     public string? CustomerPO { get; set; }
     public string? Descricao { get; set; }
     public string? Comentarios { get; set; }
+    public string? FileName { get; set; }
+    public string? FileData { get; set; } // Base64 data
+    public string? FileExtension { get; set; }
+    public string? ContentType { get; set; }
+    public long FileSize { get; set; }
 }
 
 public class CountryViewModel
