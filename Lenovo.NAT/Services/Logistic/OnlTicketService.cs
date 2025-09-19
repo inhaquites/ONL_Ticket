@@ -359,9 +359,62 @@ namespace Lenovo.NAT.Services.Logistic
                 var updatedOrder = await _orderNotLoadedRepository.UpdateOrderNotLoadedAsync(existingOrder);
                 Console.WriteLine($"OrderNotLoaded atualizado com ID: {updatedOrder.Id}");
 
-                // TODO: Implementar atualização de entidades relacionadas (SoldTo, ShipTo, Products, Attachments)
-                // Por enquanto, vamos manter as entidades relacionadas como estão
-                // Em uma versão futura, implementar a lógica completa de atualização
+                // IMPLEMENTADO: Atualização de Attachments
+                Console.WriteLine($"Atualizando {model.Attachments?.Count ?? 0} anexos...");
+                
+                // Primeiro, remover anexos existentes para este order
+                await _orderAttachmentRepository.DeleteByOrderIdAsync(updatedOrder.Id);
+                Console.WriteLine("Anexos existentes removidos");
+                
+                // Depois, adicionar os anexos atualizados
+                foreach (var attachmentVm in model.Attachments ?? new List<OnlTicketAttachmentViewModel>())
+                {
+                    // Verificar se o anexo tem dados válidos (metadados ou arquivo)
+                    if (!string.IsNullOrEmpty(attachmentVm.CustomerPO) || 
+                        !string.IsNullOrEmpty(attachmentVm.Descricao) || 
+                        !string.IsNullOrEmpty(attachmentVm.Comentarios) ||
+                        !string.IsNullOrEmpty(attachmentVm.FileData))
+                    {
+                        Console.WriteLine($"Salvando anexo atualizado: File={attachmentVm.FileName}, CustomerPO={attachmentVm.CustomerPO}");
+                        
+                        // Converter Base64 para bytes se houver dados do arquivo
+                        byte[] fileBytes = new byte[] { 0x00 }; // Default vazio
+                        if (!string.IsNullOrEmpty(attachmentVm.FileData))
+                        {
+                            try
+                            {
+                                // Remover prefixo data:type/subtype;base64, se existir
+                                var base64Data = attachmentVm.FileData;
+                                if (base64Data.Contains(","))
+                                {
+                                    base64Data = base64Data.Split(',')[1];
+                                }
+                                fileBytes = Convert.FromBase64String(base64Data);
+                                Console.WriteLine($"Arquivo convertido: {fileBytes.Length} bytes");
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine($"Erro ao converter Base64: {ex.Message}");
+                            }
+                        }
+                        
+                        var orderAttachment = new OrderAttachment
+                        {
+                            IdOrderNotLoaded = updatedOrder.Id,
+                            CreatedOn = DateTime.UtcNow.AddHours(-3),
+                            CreatedBy = model.UpdatedBy ?? "System",
+                            PONumber = attachmentVm.CustomerPO ?? "",
+                            Description = attachmentVm.Descricao ?? "",
+                            Comments = attachmentVm.Comentarios ?? "",
+                            AttachemntFileName = attachmentVm.FileName ?? "unknown_file",
+                            Attachment = fileBytes,
+                            FileExtension = attachmentVm.FileExtension ?? ".txt"
+                        };
+
+                        var createdAttachment = await _orderAttachmentRepository.CreateAsync(orderAttachment);
+                        Console.WriteLine($"Anexo atualizado salvo com ID: {createdAttachment.Id}, Nome: {attachmentVm.FileName}");
+                    }
+                }
 
                 Console.WriteLine("UpdateOrderEntities concluído com sucesso!");
             }

@@ -254,23 +254,38 @@ public class OnlTicketController : Controller
     {
         try
         {
+            Console.WriteLine($"[DEBUG] DownloadAttachment chamado com ID: {id}");
+            
             // Buscar o anexo na tabela OrderAttachment
             var attachment = await _onlTicketService.GetAttachmentByIdAsync(id);
             
-            if (attachment == null || attachment.Attachment == null || attachment.Attachment.Length == 0)
+            if (attachment == null)
             {
+                Console.WriteLine($"[ERROR] Anexo com ID {id} não encontrado");
                 TempData["Error"] = "Arquivo não encontrado!";
                 return RedirectToAction("Index");
             }
+
+            if (attachment.Attachment == null || attachment.Attachment.Length == 0)
+            {
+                Console.WriteLine($"[ERROR] Anexo com ID {id} não possui dados do arquivo");
+                TempData["Error"] = "Arquivo não possui dados!";
+                return RedirectToAction("Index");
+            }
+
+            Console.WriteLine($"[DEBUG] Anexo encontrado: Nome={attachment.AttachemntFileName}, Extensão={attachment.FileExtension}, Tamanho={attachment.Attachment.Length} bytes");
 
             // Determinar o content type baseado na extensão
             var contentType = GetContentType(attachment.FileExtension ?? ".txt");
             var fileName = attachment.AttachemntFileName ?? "download";
 
+            Console.WriteLine($"[DEBUG] Iniciando download: ContentType={contentType}, FileName={fileName}");
+
             return File(attachment.Attachment, contentType, fileName);
         }
         catch (Exception ex)
         {
+            Console.WriteLine($"[ERROR] Erro em DownloadAttachment: {ex.Message}");
             TempData["Error"] = $"Erro ao baixar arquivo: {ex.Message}";
             return RedirectToAction("Index");
         }

@@ -367,7 +367,7 @@
                         <div class="form-group">
                             <p>
                                 <strong>
-                                                    File
+                                    File <span class="text-danger">*</span>
                                 </strong>
                             </p>
                                             <div class="file-upload-container">
@@ -385,7 +385,7 @@
                         <div class="form-group">
                             <p>
                                 <strong>
-                                                    Customer PO
+                                                    Customer PO <span class="text-danger">*</span>
                                 </strong>
                             </p>
                                             <input type="text" id="attachmentCustomerPO" class="form-control" placeholder="Enter Customer PO" />
@@ -1050,11 +1050,12 @@
                     <text>
                     var existingAttachment = {
                         id: @attachment.Id,
-                        fileName: '@(attachment.CustomerPO ?? "N/A")',
+                        fileName: '@(attachment.FileName ?? "unknown_file")', // CORRIGIDO: Usar nome real do arquivo
                         customerPO: '@(attachment.CustomerPO ?? "")',
                         descricao: '@(attachment.Descricao ?? "")',
                         comentarios: '@(attachment.Comentarios ?? "")',
-                        type: 'Unknown', // Tipo desconhecido para anexos existentes
+                        type: '@(attachment.ContentType ?? "application/octet-stream")', // CORRIGIDO: Usar content type real
+                        fileExtension: '@(attachment.FileExtension ?? ".txt")', // ADICIONADO: Extensão do arquivo
                         uploadDate: new Date(),
                         isExisting: true // Marcar como anexo existente
                     };
@@ -1765,7 +1766,13 @@
         
         // Validate if file was selected
         if (!fileInput.files || fileInput.files.length === 0) {
-            alert('Please select a file.');
+            showToast('Please select a file to upload.', 'error');
+            return;
+        }
+        
+        // NOVO: Validar Customer PO obrigatório APENAS ao adicionar anexo
+        if (!customerPO || customerPO.trim() === '') {
+            showToast('Customer PO is required for attachments.', 'error');
             return;
         }
         
@@ -1777,13 +1784,13 @@
         
         // Validate size
         if (file.size > maxSize) {
-            alert(`File ${file.name} is too large. Maximum allowed size: 10MB`);
+            showToast(`File ${file.name} is too large. Maximum allowed size: 10MB`, 'error');
             return;
         }
         
         // Validate type
         if (!allowedTypes.includes(file.type)) {
-            alert(`File type ${file.name} is not allowed.`);
+            showToast(`File type ${file.name} is not allowed. Please select: PDF, DOC, DOCX, XLS, XLSX, JPG, JPEG, PNG, or TXT files.`, 'error');
             return;
         }
         
@@ -1818,10 +1825,13 @@
             
             // Clear form
             clearAttachmentForm();
+            
+            // Show success toast
+            showToast(`File "${attachmentData.fileName}" added successfully!`, 'success');
         };
         
         reader.onerror = function() {
-            alert('Error reading file. Please try again.');
+            showToast('Error reading file. Please try again.', 'error');
         };
         
         // Read file as data URL (Base64)
@@ -1850,7 +1860,11 @@
 
     // Add attachment to table
     function addAttachmentToTable(attachmentData) {
-        var typeText = getFileTypeText(attachmentData.type);
+        // CORRIGIDO: Mostrar extensão do arquivo na coluna Type (sem ponto e em maiúsculo)
+        var typeText = attachmentData.fileExtension || getFileTypeText(attachmentData.type);
+        if (typeText && typeText.startsWith('.')) {
+            typeText = typeText.substring(1).toUpperCase(); // Remove ponto e converte para maiúsculo
+        }
         
         // Determinar se é arquivo novo ou existente
         var isExisting = attachmentData.isExisting || (attachmentData.id && attachmentData.id > 0);
@@ -1861,7 +1875,7 @@
         
         var row = `
             <tr data-attachment-id="${attachmentData.id}">
-                <td>${attachmentData.fileName}</td>
+                <td>${attachmentData.fileName || 'Unknown File'}</td>
                 <td>${attachmentData.customerPO || '-'}</td>
                 <td>${attachmentData.descricao || '-'}</td>
                 <td>${attachmentData.comentarios || '-'}</td>
@@ -1904,8 +1918,18 @@
     $(document).on('click', '.download-attachment', function() {
         var attachmentId = $(this).data('attachment-id');
         
+        console.log(`[DEBUG] Download clicado - Attachment ID: ${attachmentId}`);
+        
+        if (!attachmentId || attachmentId <= 0) {
+            console.log('[ERROR] ID do anexo inválido');
+            showToast('Invalid attachment ID for download.', 'error');
+            return;
+        }
+        
         // Criar URL para download
         var downloadUrl = `/Logistic/OnlTicket/DownloadAttachment/${attachmentId}`;
+        
+        console.log(`[DEBUG] URL de download: ${downloadUrl}`);
         
         // Abrir download em nova aba
         window.open(downloadUrl, '_blank');
