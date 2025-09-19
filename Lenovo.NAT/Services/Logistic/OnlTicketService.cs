@@ -104,38 +104,22 @@ namespace Lenovo.NAT.Services.Logistic
         {
             try
             {
-                Console.WriteLine($"[DEBUG] GetOnlTicketDetail - Iniciando busca para ID: {id}");
-                
                 // MIGRADO: Buscar dados das novas tabelas Order
                 var orderNotLoaded = await _orderNotLoadedRepository.GetOrderNotLoadedByIdAsync(id);
                 if (orderNotLoaded == null)
                 {
-                    Console.WriteLine($"[DEBUG] Order com ID {id} não encontrado");
                     throw new InvalidOperationException($"Order com ID {id} não encontrado");
                 }
 
-                Console.WriteLine($"[DEBUG] Order encontrado: {orderNotLoaded.NumberOrder}");
-
                 var model = await MapOrderToViewModel(orderNotLoaded);
-                
-                Console.WriteLine($"[DEBUG] Modelo mapeado, iniciando população de dropdowns");
                 
                 // CORRIGIDO: Popular dropdowns para exibir na tela
                 await PopulateDropdowns(model);
-                
-                Console.WriteLine($"[DEBUG] Dropdowns populadas:");
-                Console.WriteLine($"  - OrderTypes: {model.OrderTypes?.Count ?? 0} itens");
-                Console.WriteLine($"  - OrderStatuses: {model.OrderStatuses?.Count ?? 0} itens");
-                Console.WriteLine($"  - NFTypes: {model.NFTypes?.Count ?? 0} itens");
-                Console.WriteLine($"  - CustomerSegments: {model.CustomerSegments?.Count ?? 0} itens");
-                Console.WriteLine($"  - Countries: {model.Countries?.Count ?? 0} itens");
                 
                 return model;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[ERROR] Erro em GetOnlTicketDetail: {ex.Message}");
-                Console.WriteLine($"[ERROR] StackTrace: {ex.StackTrace}");
                 throw;
             }
         }
@@ -163,9 +147,6 @@ namespace Lenovo.NAT.Services.Logistic
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Erro em SaveOnlTicket: {ex.Message}");
-                Console.WriteLine($"StackTrace: {ex.StackTrace}");
-                
                 var innerMessage = ex.InnerException?.Message ?? "Nenhuma exceção interna";
                 throw new Exception($"Erro ao salvar ONL Ticket: {ex.Message}. Detalhes: {innerMessage}", ex);
             }
@@ -179,7 +160,6 @@ namespace Lenovo.NAT.Services.Logistic
                 if (string.IsNullOrEmpty(model.ID))
                     throw new ArgumentException("ID é obrigatório para atualização");
 
-                Console.WriteLine($"[DEBUG] UpdateOnlTicket - Iniciando atualização para ID: {model.ID}");
 
                 // MIGRADO: Verificar se existe nas tabelas Order
                 var orderId = long.Parse(model.ID);
@@ -187,7 +167,6 @@ namespace Lenovo.NAT.Services.Logistic
                 if (existingOrder == null)
                     throw new ArgumentException("ONL Ticket não encontrado nas tabelas Order");
 
-                Console.WriteLine($"[DEBUG] Registro encontrado: {existingOrder.NumberOrder}");
 
                 // CORRIGIDO: Usar método específico para atualização
                 await UpdateOrderEntities(model, orderId);
@@ -195,7 +174,6 @@ namespace Lenovo.NAT.Services.Logistic
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[ERROR] Erro em UpdateOnlTicket: {ex.Message}");
                 throw new Exception($"Erro ao atualizar ONL Ticket: {ex.Message}", ex);
             }
         }
@@ -295,8 +273,6 @@ namespace Lenovo.NAT.Services.Logistic
         {
             try
             {
-                Console.WriteLine($"[DEBUG] UpdateOrderEntities - Iniciando atualização para Order ID: {orderId}");
-
                 // Buscar dados válidos para os dropdowns
                 var validOrderTypes = await GetOrderTypes();
                 var validNFTypes = await GetNFTypes();
@@ -311,7 +287,6 @@ namespace Lenovo.NAT.Services.Logistic
                 var selectedNFTypeId = TryParseInt(model.NFType) ?? defaultNFTypeId;
                 var selectedSegmentId = model.SegmentId ?? TryParseInt(model.Segment);
 
-                Console.WriteLine($"IDs selecionados: OrderType={selectedOrderTypeId}, NFType={selectedNFTypeId}, Segment={selectedSegmentId}");
                 
                 // Buscar textos correspondentes aos IDs selecionados
                 var selectedOrderTypeText = validOrderTypes.FirstOrDefault(x => x.Id == selectedOrderTypeId)?.Name ?? model.OrderType ?? "";
@@ -319,7 +294,6 @@ namespace Lenovo.NAT.Services.Logistic
                 var selectedSegmentText = validCustomerSegments.FirstOrDefault(x => x.Id == selectedSegmentId)?.Name ?? model.Segment ?? "";
                 var selectedCountryText = validCountries.FirstOrDefault(x => x.Id == model.CountryId)?.Name ?? model.Country ?? "";
                 
-                Console.WriteLine($"Textos encontrados: OrderType='{selectedOrderTypeText}', NFType='{selectedNFTypeText}', Segment='{selectedSegmentText}', Country='{selectedCountryText}'");
 
                 // BUSCAR O REGISTRO EXISTENTE PARA ATUALIZAR
                 var existingOrder = await _orderNotLoadedRepository.GetOrderNotLoadedByIdAsync(orderId);
@@ -354,10 +328,8 @@ namespace Lenovo.NAT.Services.Logistic
 
                 // ATUALIZAR NO BANCO DE DADOS
                 var updatedOrder = await _orderNotLoadedRepository.UpdateOrderNotLoadedAsync(existingOrder);
-                Console.WriteLine($"OrderNotLoaded atualizado com ID: {updatedOrder.Id}");
 
                 // IMPLEMENTAÇÃO COMPLETA: Gerenciamento inteligente de anexos
-                Console.WriteLine("=== GERENCIAMENTO INTELIGENTE DE ANEXOS ===");
                 
                 // 1. PROCESSAR REMOÇÕES EXPLÍCITAS
                 if (!string.IsNullOrEmpty(model.RemovedAttachmentIds))
@@ -367,12 +339,10 @@ namespace Lenovo.NAT.Services.Logistic
                         .Select(id => int.Parse(id.Trim()))
                         .ToList();
                     
-                    Console.WriteLine($"Removendo anexos explicitamente marcados: {string.Join(",", idsToRemove)}");
                     
                     foreach (var attachmentId in idsToRemove)
                     {
                         await _orderAttachmentRepository.DeleteAsync(attachmentId);
-                        Console.WriteLine($"Anexo removido: ID {attachmentId}");
                     }
                 }
                 
@@ -382,7 +352,6 @@ namespace Lenovo.NAT.Services.Logistic
                     !string.IsNullOrEmpty(a.FileData) // Tem dados do arquivo
                 ) ?? new List<OnlTicketAttachmentViewModel>();
                 
-                Console.WriteLine($"Adicionando {newAttachments.Count()} anexos novos...");
                 
                 foreach (var attachmentVm in newAttachments)
                 {
@@ -391,7 +360,6 @@ namespace Lenovo.NAT.Services.Logistic
                         !string.IsNullOrEmpty(attachmentVm.Comments) ||
                         !string.IsNullOrEmpty(attachmentVm.FileData))
                     {
-                        Console.WriteLine($"Salvando anexo NOVO: File={attachmentVm.FileName}, CustomerPO={attachmentVm.CustomerPO}");
                         
                         // Converter Base64 para bytes
                         byte[] fileBytes = new byte[] { 0x00 };
@@ -405,11 +373,9 @@ namespace Lenovo.NAT.Services.Logistic
                                     base64Data = base64Data.Split(',')[1];
                                 }
                                 fileBytes = Convert.FromBase64String(base64Data);
-                                Console.WriteLine($"Arquivo convertido: {fileBytes.Length} bytes");
                             }
                             catch (Exception ex)
                             {
-                                Console.WriteLine($"Erro ao converter Base64: {ex.Message}");
                             }
                         }
                         
@@ -427,16 +393,11 @@ namespace Lenovo.NAT.Services.Logistic
                         };
 
                         var createdAttachment = await _orderAttachmentRepository.CreateAsync(orderAttachment);
-                        Console.WriteLine($"Anexo NOVO salvo com ID: {createdAttachment.Id}, Nome: {attachmentVm.FileName}");
                     }
                 }
                 
-                Console.WriteLine("=== ANEXOS EXISTENTES: 100% PRESERVADOS ===");
-                Console.WriteLine("=== ANEXOS REMOVIDOS: Apenas os explicitamente marcados ===");
-                Console.WriteLine("=== ANEXOS NOVOS: Adicionados com dados binários completos ===");
 
                 // 3. ATUALIZAR SOLD TO, SHIP TO E ORDER ITEMS
-                Console.WriteLine("=== ATUALIZANDO ENDEREÇOS E PRODUTOS ===");
                 
                 // CORREÇÃO: Remover na ordem correta das dependências (FK constraints)
                 // 1º: OrderProduct (grandchild - sem dependências)
@@ -465,7 +426,6 @@ namespace Lenovo.NAT.Services.Logistic
                         };
 
                         var createdSoldTo = await _orderSoldTORepository.CreateAsync(orderSoldTo);
-                        Console.WriteLine($"SoldTo atualizado: ID {createdSoldTo.Id}");
 
                         // Salvar ShipTo addresses
                         foreach (var shipToVm in soldToVm.ShipToAddresses ?? new List<ShipToViewModel>())
@@ -489,7 +449,6 @@ namespace Lenovo.NAT.Services.Logistic
                                 };
 
                                 var createdShipTo = await _orderShipToRepository.CreateAsync(orderShipTo);
-                                Console.WriteLine($"ShipTo atualizado: ID {createdShipTo.Id}");
 
                                 // Salvar Order Items
                                 foreach (var itemVm in shipToVm.OrderItems ?? new List<OrderItemViewModel>())
@@ -511,7 +470,6 @@ namespace Lenovo.NAT.Services.Logistic
                                         };
 
                                         var createdProduct = await _orderProductRepository.CreateAsync(orderProduct);
-                                        Console.WriteLine($"OrderProduct atualizado: ID {createdProduct.Id}");
                                     }
                                 }
                             }
@@ -519,13 +477,9 @@ namespace Lenovo.NAT.Services.Logistic
                     }
                 }
 
-                Console.WriteLine("UpdateOrderEntities concluído com sucesso!");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Erro em UpdateOrderEntities: {ex.Message}");
-                Console.WriteLine($"InnerException: {ex.InnerException?.Message}");
-                Console.WriteLine($"StackTrace: {ex.StackTrace}");
                 
                 var detailedMessage = ex.InnerException?.Message ?? ex.Message;
                 throw new Exception($"Erro ao atualizar nas entidades Order: {detailedMessage}", ex);
@@ -550,7 +504,6 @@ namespace Lenovo.NAT.Services.Logistic
                 var selectedNFTypeId = TryParseInt(model.NFType) ?? defaultNFTypeId;
                 var selectedSegmentId = model.SegmentId ?? TryParseInt(model.Segment);
 
-                Console.WriteLine($"IDs selecionados: OrderType={selectedOrderTypeId}, NFType={selectedNFTypeId}, Segment={selectedSegmentId}");
                 
                 // Buscar textos correspondentes aos IDs selecionados
                 var selectedOrderTypeText = validOrderTypes.FirstOrDefault(x => x.Id == selectedOrderTypeId)?.Name ?? model.OrderType ?? "";
@@ -558,7 +511,6 @@ namespace Lenovo.NAT.Services.Logistic
                 var selectedSegmentText = validCustomerSegments.FirstOrDefault(x => x.Id == selectedSegmentId)?.Name ?? model.Segment ?? "";
                 var selectedCountryText = validCountries.FirstOrDefault(x => x.Id == model.CountryId)?.Name ?? model.Country ?? "";
                 
-                Console.WriteLine($"Textos encontrados: OrderType='{selectedOrderTypeText}', NFType='{selectedNFTypeText}', Segment='{selectedSegmentText}', Country='{selectedCountryText}'");
 
                 // Criar OrderNotLoaded
                 var orderNotLoaded = new OrderNotLoaded
@@ -601,7 +553,6 @@ namespace Lenovo.NAT.Services.Logistic
                 };
 
                 var createdOrder = await _orderNotLoadedRepository.CreateOrderNotLoadedAsync(orderNotLoaded);
-                Console.WriteLine($"OrderNotLoaded criado com ID: {createdOrder.Id}");
 
                 // Salvar SoldTo, ShipTo e Products
                 foreach (var soldToVm in model.SoldToAddresses ?? new List<SoldToViewModel>())
@@ -670,7 +621,6 @@ namespace Lenovo.NAT.Services.Logistic
                 }
 
                 // CORRIGIDO: Salvar Attachments que estavam sendo ignorados
-                Console.WriteLine($"Salvando {model.Attachments?.Count ?? 0} anexos...");
                 foreach (var attachmentVm in model.Attachments ?? new List<OnlTicketAttachmentViewModel>())
                 {
                     // Verificar se o anexo tem dados válidos (metadados ou arquivo)
@@ -679,14 +629,6 @@ namespace Lenovo.NAT.Services.Logistic
                         !string.IsNullOrEmpty(attachmentVm.Comments) ||
                         !string.IsNullOrEmpty(attachmentVm.FileData))
                     {
-                        Console.WriteLine($"[DEBUG] Dados do anexo recebidos:");
-                        Console.WriteLine($"  - FileName: '{attachmentVm.FileName}'");
-                        Console.WriteLine($"  - FileExtension: '{attachmentVm.FileExtension}'");
-                        Console.WriteLine($"  - ContentType: '{attachmentVm.ContentType}'");
-                        Console.WriteLine($"  - FileSize: {attachmentVm.FileSize}");
-                        Console.WriteLine($"  - CustomerPO: '{attachmentVm.CustomerPO}'");
-                        Console.WriteLine($"  - Description: '{attachmentVm.Description}'");
-                        Console.WriteLine($"  - FileData: {(string.IsNullOrEmpty(attachmentVm.FileData) ? "VAZIO" : $"{attachmentVm.FileData.Length} caracteres")}");
                         
                         // Converter Base64 para bytes se houver dados do arquivo
                         byte[] fileBytes = new byte[] { 0x00 }; // Default vazio
@@ -701,11 +643,9 @@ namespace Lenovo.NAT.Services.Logistic
                                     base64Data = base64Data.Split(',')[1];
                                 }
                                 fileBytes = Convert.FromBase64String(base64Data);
-                                Console.WriteLine($"Arquivo convertido: {fileBytes.Length} bytes");
                             }
                             catch (Exception ex)
                             {
-                                Console.WriteLine($"Erro ao converter Base64: {ex.Message}");
                             }
                         }
                         
@@ -723,17 +663,12 @@ namespace Lenovo.NAT.Services.Logistic
                         };
 
                         var createdAttachment = await _orderAttachmentRepository.CreateAsync(orderAttachment);
-                        Console.WriteLine($"Anexo salvo com ID: {createdAttachment.Id}, Nome: {attachmentVm.FileName}");
                     }
                 }
 
-                Console.WriteLine("SaveToOrderEntities concluído com sucesso!");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Erro em SaveToOrderEntities: {ex.Message}");
-                Console.WriteLine($"InnerException: {ex.InnerException?.Message}");
-                Console.WriteLine($"StackTrace: {ex.StackTrace}");
                 
                 var detailedMessage = ex.InnerException?.Message ?? ex.Message;
                 throw new Exception($"Erro ao salvar nas entidades Order: {detailedMessage}", ex);
@@ -829,35 +764,24 @@ namespace Lenovo.NAT.Services.Logistic
         {
             try
             {
-                Console.WriteLine("[DEBUG] PopulateDropdowns - Iniciando população de dropdowns");
                 
                 model.OrderTypes = (await GetOrderTypes()).ToList();
-                Console.WriteLine($"[DEBUG] OrderTypes carregados: {model.OrderTypes.Count}");
                 
                 model.OrderStatuses = (await GetOrderStatuses()).ToList();
-                Console.WriteLine($"[DEBUG] OrderStatuses carregados: {model.OrderStatuses.Count}");
                 
                 model.NFTypes = (await GetNFTypes()).ToList();
-                Console.WriteLine($"[DEBUG] NFTypes carregados: {model.NFTypes.Count}");
                 
                 model.CustomerSegments = (await GetCustomerSegments()).ToList();
-                Console.WriteLine($"[DEBUG] CustomerSegments carregados: {model.CustomerSegments.Count}");
                 
                 model.Countries = (await GetCountries()).ToList();
-                Console.WriteLine($"[DEBUG] Countries carregados: {model.Countries.Count}");
                 
                 model.Segments = (await GetSegments()).ToList();
-                Console.WriteLine($"[DEBUG] Segments carregados: {model.Segments.Count}");
                 
                 model.CustomerNames = (await GetCustomerNames()).ToList();
-                Console.WriteLine($"[DEBUG] CustomerNames carregados: {model.CustomerNames.Count}");
                 
-                Console.WriteLine("[DEBUG] PopulateDropdowns - Finalizado com sucesso");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[ERROR] Erro em PopulateDropdowns: {ex.Message}");
-                Console.WriteLine($"[ERROR] StackTrace: {ex.StackTrace}");
                 throw;
             }
         }

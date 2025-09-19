@@ -968,25 +968,15 @@
     generateOrderItemHiddenFields();
     
     // Debug: Log all form data before submission
-    console.log('=== FORM SUBMISSION DEBUG ===');
-    console.log('Total Sold To Cards:', $('.sold-to-card').length);
-    console.log('Total Ship To Cards:', $('.ship-to-card').length);
-    console.log('Total Order Items Tables:', $('.order-items-table').length);
-    console.log('Sold To Addresses Fields:', $('input[name*="SoldToAddresses"]').length);
-    console.log('Ship To Addresses Fields:', $('input[name*="ShipToAddresses"]').length);
-    console.log('Order Items Fields:', $('input[name*="OrderItems"]').length);
     
     // Log each Order Item field
     $('input[name*="OrderItems"]').each(function() {
-        console.log('Order Item Field:', $(this).attr('name'), '=', $(this).val());
     });
     
     // Log each Ship To field
     $('input[name*="ShipToAddresses"]').each(function() {
-        console.log('Ship To Field:', $(this).attr('name'), '=', $(this).val());
     });
     
-    console.log('=== END FORM SUBMISSION DEBUG ===');
     });
 
     // Variables for index control
@@ -1030,12 +1020,6 @@
         
         // Re-index all elements to ensure consistency
         reindexAllElements();
-        
-        console.log('Initialized indexes:', {
-            soldToIndex: soldToIndex,
-            shipToIndex: shipToIndex,
-            orderItemIndex: orderItemIndex
-        });
     }
 
     // Re-index all elements to ensure consistency
@@ -1181,7 +1165,6 @@
         $(this).closest('.sold-to-card').remove();
         reindexAllElements();
         soldToIndex = $('.sold-to-card').length;
-        console.log('Sold To removed. New soldToIndex:', soldToIndex);
     });
 
     // Adicionar novo Ship To para um Sold To específico
@@ -1347,7 +1330,6 @@
         $(this).closest('.ship-to-card').remove();
         reindexAllElements();
         shipToIndex = $('.ship-to-card').length;
-        console.log('Ship To removed. New shipToIndex:', shipToIndex);
     });
 
     // Adicionar Order Item para um Ship To específico (sistema de tabela)
@@ -1410,27 +1392,9 @@
         var unitGrossPrice = validateDecimalInput($cardBody.find('input[id*="orderItemUnitGrossPrice"]').val() || $(`#orderItemUnitGrossPrice_${soldToIdx}_${shipToIdx}`).val(), 'UnitGrossPrice');
         
         // Debug: Show what values were found
-        console.log('Order Item Validation Debug:', {
-            soldToIdx: soldToIdx,
-            shipToIdx: shipToIdx,
-            bidContractNumber: bidContractNumber,
-            partNumber: partNumber,
-            partNumberDescription: partNumberDescription,
-            qty: qty,
-            unityNetPrice: unityNetPrice,
-            unitGrossPrice: unitGrossPrice
-        });
         
         // Validate required fields
         if (!bidContractNumber || !partNumber || !partNumberDescription || !qty || !unityNetPrice || !unitGrossPrice) {
-            console.log('Validation failed - missing fields:', {
-                bidContractNumber: !bidContractNumber,
-                partNumber: !partNumber,
-                partNumberDescription: !partNumberDescription,
-                qty: !qty,
-                unityNetPrice: !unityNetPrice,
-                unitGrossPrice: !unitGrossPrice
-            });
             alert('Please fill in all Order Item fields');
             return;
         }
@@ -1455,17 +1419,13 @@
         // Helper function to format decimal numbers for display
         function formatDecimalForDisplay(value) {
             if (!value) return '';
-            console.log('formatDecimalForDisplay input:', value);
             // Parse the value to ensure it's a valid number
             var numValue = parseFloat(value);
-            console.log('formatDecimalForDisplay parsed:', numValue);
             if (isNaN(numValue)) {
-                console.log('formatDecimalForDisplay NaN, returning original:', value);
                 return value;
             }
             // Format with 2 decimal places and convert dot to comma
             var result = numValue.toFixed(2).replace('.', ',');
-            console.log('formatDecimalForDisplay result:', result);
             return result;
         }
         
@@ -1610,8 +1570,6 @@
         $('input[name*="OrderItems"]').remove();
         
         // Debug: Show all tables found
-        console.log('=== GENERATE ORDER ITEM HIDDEN FIELDS DEBUG ===');
-        console.log('Total order-items-table found:', $('.order-items-table').length);
         
         // Process each Order Items table
         $('.order-items-table').each(function(tableIndex) {
@@ -1633,13 +1591,11 @@
                     $table.attr('data-soldto-index', soldToIdx);
                     $table.attr('data-shipto-index', shipToIdx);
                     
-                    console.log(`Auto-detected indices for table ${tableIndex}: soldToIdx=${soldToIdx}, shipToIdx=${shipToIdx}`);
                 }
             }
             
             var tbody = $table.find('.order-items-table-body');
             
-            console.log(`Table ${tableIndex}: soldToIdx=${soldToIdx}, shipToIdx=${shipToIdx}, rows=${tbody.find('tr').length}`);
             
             // Only process if we have valid indices
             if (soldToIdx !== undefined && shipToIdx !== undefined) {
@@ -1688,24 +1644,13 @@
                     <input type="hidden" name="SoldToAddresses[${soldToIdx}].ShipToAddresses[${shipToIdx}].OrderItems[${itemIdx}].UnitGrossPrice" value="${unitGrossPriceForDB}" />
                 `;
                 
-                console.log('Creating hidden fields for Order Item:', {
-                    soldToIdx: soldToIdx,
-                    shipToIdx: shipToIdx, 
-                    itemIdx: itemIdx,
-                    bidContract: cells.eq(0).text(),
-                    partNumber: cells.eq(1).text()
-                });
-                
                 // Append hidden fields to form
                 $('form').append(hiddenFields);
                 });
             } else {
-                console.log(`Skipping table ${tableIndex} - invalid indices: soldToIdx=${soldToIdx}, shipToIdx=${shipToIdx}`);
             }
         });
         
-        console.log('=== END GENERATE ORDER ITEM HIDDEN FIELDS DEBUG ===');
-        console.log('Total Order Item hidden fields created:', $('input[name*="OrderItems"]').length);
     }
 
     // Update Sold To numbers
@@ -1923,7 +1868,6 @@
     $(document).on('click', '.remove-attachment', function() {
         var attachmentId = $(this).data('attachment-id');
         
-        console.log(`[DEBUG] Removendo anexo ID: ${attachmentId}`);
         
         // Se é anexo existente (ID > 0), adicionar à lista de removidos
         if (attachmentId > 0) {
@@ -1933,7 +1877,6 @@
             if (!removedIds.includes(attachmentId.toString())) {
                 removedIds.push(attachmentId.toString());
                 $('#removedAttachmentIds').val(removedIds.join(','));
-                console.log(`[DEBUG] Anexos marcados para remoção: ${removedIds.join(',')}`);
             }
         }
         
@@ -1962,10 +1905,8 @@
     $(document).on('click', '.download-attachment', function() {
         var attachmentId = $(this).data('attachment-id');
         
-        console.log(`[DEBUG] Download clicado - Attachment ID: ${attachmentId}`);
         
         if (!attachmentId || attachmentId <= 0) {
-            console.log('[ERROR] ID do anexo inválido');
             showToast('Invalid attachment ID for download.', 'error');
             return;
         }
@@ -1973,7 +1914,6 @@
         // Criar URL para download
         var downloadUrl = `/Logistic/OnlTicket/DownloadAttachment/${attachmentId}`;
         
-        console.log(`[DEBUG] URL de download: ${downloadUrl}`);
         
         // Abrir download em nova aba
         window.open(downloadUrl, '_blank');

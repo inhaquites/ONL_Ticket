@@ -102,22 +102,9 @@ public class OnlTicketController : Controller
             // VERIFICAÇÃO: Garantir que as dropdowns não estejam nulas
             if (model.OrderTypes == null || !model.OrderTypes.Any())
             {
-                Console.WriteLine("[WARNING] OrderTypes está nulo ou vazio, recarregando...");
                 await PopulateDropdowns(model);
             }
 
-            // DEBUG: Verificar se as dropdowns estão sendo passadas para a view
-            Console.WriteLine($"[DEBUG] Controller - Dados sendo passados para a view:");
-            Console.WriteLine($"  - OrderTypes: {model.OrderTypes?.Count ?? 0} itens");
-            Console.WriteLine($"  - OrderStatuses: {model.OrderStatuses?.Count ?? 0} itens");
-            Console.WriteLine($"  - NFTypes: {model.NFTypes?.Count ?? 0} itens");
-            Console.WriteLine($"  - CustomerSegments: {model.CustomerSegments?.Count ?? 0} itens");
-            Console.WriteLine($"  - Countries: {model.Countries?.Count ?? 0} itens");
-            
-            if (model.OrderTypes?.Any() == true)
-            {
-                Console.WriteLine($"  - Primeiro OrderType: ID={model.OrderTypes.First().Id}, Name='{model.OrderTypes.First().Name}'");
-            }
 
             // CORREÇÃO: Limpar TempData de sucesso para evitar toast indevido no Details
             TempData.Remove("Success");
@@ -126,7 +113,6 @@ public class OnlTicketController : Controller
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[ERROR] Erro em Details: {ex.Message}");
             TempData["Error"] = $"Error loading ONL Ticket: {ex.Message}";
             return RedirectToAction("Index");
         }
@@ -257,53 +243,37 @@ public class OnlTicketController : Controller
     {
         try
         {
-            Console.WriteLine($"[DEBUG] DownloadAttachment chamado com ID: {id}");
-            
             // Buscar o anexo na tabela OrderAttachment
             var attachment = await _onlTicketService.GetAttachmentByIdAsync(id);
             
             if (attachment == null)
             {
-                Console.WriteLine($"[ERROR] Anexo com ID {id} não encontrado no banco de dados");
                 TempData["Error"] = "Arquivo não encontrado!";
                 return RedirectToAction("Index");
             }
 
-            Console.WriteLine($"[DEBUG] Anexo encontrado no banco: ID={attachment.Id}, Nome={attachment.AttachemntFileName}");
-
             if (attachment.Attachment == null || attachment.Attachment.Length == 0)
             {
-                Console.WriteLine($"[ERROR] Anexo com ID {id} não possui dados do arquivo - Attachment is null or empty");
-                Console.WriteLine($"[DEBUG] Attachment == null: {attachment.Attachment == null}");
-                Console.WriteLine($"[DEBUG] Attachment.Length: {attachment.Attachment?.Length ?? 0}");
                 TempData["Error"] = "Arquivo não possui dados!";
                 return RedirectToAction("Index");
             }
-
-            Console.WriteLine($"[DEBUG] Anexo encontrado: Nome={attachment.AttachemntFileName}, Extensão={attachment.FileExtension}, Tamanho={attachment.Attachment.Length} bytes");
 
             // Determinar o content type baseado na extensão
             var contentType = GetContentType(attachment.FileExtension ?? ".txt");
             var fileName = attachment.AttachemntFileName ?? "download";
 
-            Console.WriteLine($"[DEBUG] Iniciando download: ContentType={contentType}, FileName={fileName}");
-            Console.WriteLine($"[DEBUG] Primeiros 10 bytes do arquivo: {string.Join(",", attachment.Attachment.Take(10))}");
-
-            // TESTE: Verificar se dados são válidos
+            // Verificar se dados são válidos
             if (attachment.Attachment.Length == 1 && attachment.Attachment[0] == 0x00)
             {
-                Console.WriteLine("[WARNING] Arquivo parece ser placeholder vazio (apenas 1 byte = 0x00)");
                 TempData["Error"] = "Arquivo está vazio ou corrompido!";
                 return RedirectToAction("Index");
             }
 
             var result = File(attachment.Attachment, contentType, fileName);
-            Console.WriteLine($"[DEBUG] File() method chamado com sucesso");
             return result;
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[ERROR] Erro em DownloadAttachment: {ex.Message}");
             TempData["Error"] = $"Erro ao baixar arquivo: {ex.Message}";
             return RedirectToAction("Index");
         }
