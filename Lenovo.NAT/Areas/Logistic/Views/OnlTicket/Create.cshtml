@@ -31,6 +31,8 @@
 
 @using (Html.BeginForm(string.IsNullOrEmpty(Model.ID) ? "Create" : "Edit", "OnlTicket", FormMethod.Post))
 {
+    <!-- Campo hidden para rastrear anexos removidos -->
+    <input type="hidden" id="removedAttachmentIds" name="RemovedAttachmentIds" value="" />
     @Html.HiddenFor(model => model.ID)
     
     <div class="alert">
@@ -1896,6 +1898,20 @@
     $(document).on('click', '.remove-attachment', function() {
         var attachmentId = $(this).data('attachment-id');
         
+        console.log(`[DEBUG] Removendo anexo ID: ${attachmentId}`);
+        
+        // Se é anexo existente (ID > 0), adicionar à lista de removidos
+        if (attachmentId > 0) {
+            var currentRemovedIds = $('#removedAttachmentIds').val();
+            var removedIds = currentRemovedIds ? currentRemovedIds.split(',') : [];
+            
+            if (!removedIds.includes(attachmentId.toString())) {
+                removedIds.push(attachmentId.toString());
+                $('#removedAttachmentIds').val(removedIds.join(','));
+                console.log(`[DEBUG] Anexos marcados para remoção: ${removedIds.join(',')}`);
+            }
+        }
+        
         // Find attachment index
         var attachmentIndex = uploadedFiles.findIndex(attachment => attachment.id === attachmentId);
         
@@ -1912,6 +1928,9 @@
         
         // Reindex remaining hidden fields
         reindexAttachmentHiddenFields();
+        
+        // Show toast
+        showToast('Attachment marked for removal. Save to confirm.', 'warning');
     });
 
     // Download attachment

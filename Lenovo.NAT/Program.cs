@@ -116,7 +116,7 @@ using (var app = builder.Build())
     app.MapAreaControllerRoute(
         name: "Logistic",
         areaName: "Logistic",
-        pattern: "Logistic/{controller=Picking}/{action=Index}"
+        pattern: "Logistic/{controller=Picking}/{action=Index}/{id?}"
     );
 
     app.UseMiddleware<UserTrackingMiddleware>();

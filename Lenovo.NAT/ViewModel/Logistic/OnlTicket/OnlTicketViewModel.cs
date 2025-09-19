@@ -118,4 +118,7 @@ public class OnlTicketViewModel
     public List<CountryViewModel> Countries { get; set; } = new();
     public List<string> Segments { get; set; } = new();
     public List<string> CustomerNames { get; set; } = new();
+    
+    // NOVO: Rastrear anexos removidos
+    public string? RemovedAttachmentIds { get; set; }
 }

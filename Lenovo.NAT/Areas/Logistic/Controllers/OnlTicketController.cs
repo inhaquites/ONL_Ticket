@@ -261,14 +261,18 @@ public class OnlTicketController : Controller
             
             if (attachment == null)
             {
-                Console.WriteLine($"[ERROR] Anexo com ID {id} não encontrado");
+                Console.WriteLine($"[ERROR] Anexo com ID {id} não encontrado no banco de dados");
                 TempData["Error"] = "Arquivo não encontrado!";
                 return RedirectToAction("Index");
             }
 
+            Console.WriteLine($"[DEBUG] Anexo encontrado no banco: ID={attachment.Id}, Nome={attachment.AttachemntFileName}");
+
             if (attachment.Attachment == null || attachment.Attachment.Length == 0)
             {
-                Console.WriteLine($"[ERROR] Anexo com ID {id} não possui dados do arquivo");
+                Console.WriteLine($"[ERROR] Anexo com ID {id} não possui dados do arquivo - Attachment is null or empty");
+                Console.WriteLine($"[DEBUG] Attachment == null: {attachment.Attachment == null}");
+                Console.WriteLine($"[DEBUG] Attachment.Length: {attachment.Attachment?.Length ?? 0}");
                 TempData["Error"] = "Arquivo não possui dados!";
                 return RedirectToAction("Index");
             }
@@ -280,8 +284,19 @@ public class OnlTicketController : Controller
             var fileName = attachment.AttachemntFileName ?? "download";
 
             Console.WriteLine($"[DEBUG] Iniciando download: ContentType={contentType}, FileName={fileName}");
+            Console.WriteLine($"[DEBUG] Primeiros 10 bytes do arquivo: {string.Join(",", attachment.Attachment.Take(10))}");
 
-            return File(attachment.Attachment, contentType, fileName);
+            // TESTE: Verificar se dados são válidos
+            if (attachment.Attachment.Length == 1 && attachment.Attachment[0] == 0x00)
+            {
+                Console.WriteLine("[WARNING] Arquivo parece ser placeholder vazio (apenas 1 byte = 0x00)");
+                TempData["Error"] = "Arquivo está vazio ou corrompido!";
+                return RedirectToAction("Index");
+            }
+
+            var result = File(attachment.Attachment, contentType, fileName);
+            Console.WriteLine($"[DEBUG] File() method chamado com sucesso");
+            return result;
         }
         catch (Exception ex)
         {
