@@ -1072,15 +1072,15 @@
             @foreach (var attachment in Model.Attachments)
             {
                 // Só carregar anexos que tenham pelo menos CustomerPO, Descricao ou Comentarios preenchidos
-                @if (!string.IsNullOrEmpty(attachment.CustomerPO) || !string.IsNullOrEmpty(attachment.Descricao) || !string.IsNullOrEmpty(attachment.Comentarios))
+                @if (!string.IsNullOrEmpty(attachment.CustomerPO) || !string.IsNullOrEmpty(attachment.Description) || !string.IsNullOrEmpty(attachment.Comments))
                 {
                     <text>
                     var existingAttachment = {
                         id: @attachment.Id,
                         fileName: '@(attachment.FileName ?? "unknown_file")', // CORRIGIDO: Usar nome real do arquivo
                         customerPO: '@(attachment.CustomerPO ?? "")',
-                        descricao: '@(attachment.Descricao ?? "")',
-                        comentarios: '@(attachment.Comentarios ?? "")',
+                        descricao: '@(attachment.Description ?? "")',
+                        comentarios: '@(attachment.Comments ?? "")',
                         type: '@(attachment.ContentType ?? "application/octet-stream")', // CORRIGIDO: Usar content type real
                         fileExtension: '@(attachment.FileExtension ?? ".txt")', // ADICIONADO: Extensão do arquivo
                         uploadDate: new Date(),
@@ -1872,8 +1872,8 @@
         // Create hidden fields for the attachment
         var hiddenFields = `
             <input type="hidden" name="Attachments[${index}].CustomerPO" value="${attachmentData.customerPO || ''}" />
-            <input type="hidden" name="Attachments[${index}].Descricao" value="${attachmentData.descricao || ''}" />
-            <input type="hidden" name="Attachments[${index}].Comentarios" value="${attachmentData.comentarios || ''}" />
+            <input type="hidden" name="Attachments[${index}].Description" value="${attachmentData.descricao || ''}" />
+            <input type="hidden" name="Attachments[${index}].Comments" value="${attachmentData.comentarios || ''}" />
             <input type="hidden" name="Attachments[${index}].FileName" value="${attachmentData.fileName || ''}" />
             <input type="hidden" name="Attachments[${index}].FileData" value="${attachmentData.fileData || ''}" />
             <input type="hidden" name="Attachments[${index}].FileExtension" value="${attachmentData.fileExtension || ''}" />
@@ -1945,8 +1945,8 @@
         
         // Remove hidden fields
         $(`input[name="Attachments[${attachmentIndex}].CustomerPO"]`).remove();
-        $(`input[name="Attachments[${attachmentIndex}].Descricao"]`).remove();
-        $(`input[name="Attachments[${attachmentIndex}].Comentarios"]`).remove();
+        $(`input[name="Attachments[${attachmentIndex}].Description"]`).remove();
+        $(`input[name="Attachments[${attachmentIndex}].Comments"]`).remove();
         
         // Remove from table
         $(this).closest('tr').remove();
@@ -1988,8 +1988,8 @@
         uploadedFiles.forEach(function(attachment, index) {
             var hiddenFields = `
                 <input type="hidden" name="Attachments[${index}].CustomerPO" value="${attachment.customerPO || ''}" />
-                <input type="hidden" name="Attachments[${index}].Descricao" value="${attachment.descricao || ''}" />
-                <input type="hidden" name="Attachments[${index}].Comentarios" value="${attachment.comentarios || ''}" />
+                <input type="hidden" name="Attachments[${index}].Description" value="${attachment.descricao || ''}" />
+                <input type="hidden" name="Attachments[${index}].Comments" value="${attachment.comentarios || ''}" />
             `;
             $('form').append(hiddenFields);
         });

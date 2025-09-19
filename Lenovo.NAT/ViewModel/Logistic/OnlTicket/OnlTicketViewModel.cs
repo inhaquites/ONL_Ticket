@@ -6,8 +6,8 @@ public class OnlTicketAttachmentViewModel
 {
     public int Id { get; set; }
     public string? CustomerPO { get; set; }
-    public string? Descricao { get; set; }
-    public string? Comentarios { get; set; }
+    public string? Description { get; set; }
+    public string? Comments { get; set; }
     public string? FileName { get; set; }
     public string? FileData { get; set; } // Base64 data
     public string? FileExtension { get; set; }

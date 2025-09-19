@@ -280,8 +280,8 @@ namespace Lenovo.NAT.Services.Logistic
             {
                 Id = a.Id,
                 CustomerPO = a.PONumber,
-                Descricao = a.Description,
-                Comentarios = a.Comments,
+                Description = a.Description,
+                Comments = a.Comments,
                 FileName = a.AttachemntFileName, // CORRIGIDO: Mapear nome do arquivo
                 FileExtension = a.FileExtension, // CORRIGIDO: Mapear extensão
                 ContentType = GetContentTypeFromExtension(a.FileExtension), // CORRIGIDO: Mapear content type
@@ -387,8 +387,8 @@ namespace Lenovo.NAT.Services.Logistic
                 foreach (var attachmentVm in newAttachments)
                 {
                     if (!string.IsNullOrEmpty(attachmentVm.CustomerPO) || 
-                        !string.IsNullOrEmpty(attachmentVm.Descricao) || 
-                        !string.IsNullOrEmpty(attachmentVm.Comentarios) ||
+                        !string.IsNullOrEmpty(attachmentVm.Description) || 
+                        !string.IsNullOrEmpty(attachmentVm.Comments) ||
                         !string.IsNullOrEmpty(attachmentVm.FileData))
                     {
                         Console.WriteLine($"Salvando anexo NOVO: File={attachmentVm.FileName}, CustomerPO={attachmentVm.CustomerPO}");
@@ -419,8 +419,8 @@ namespace Lenovo.NAT.Services.Logistic
                             CreatedOn = DateTime.UtcNow.AddHours(-3),
                             CreatedBy = model.UpdatedBy ?? "System",
                             PONumber = attachmentVm.CustomerPO ?? "",
-                            Description = attachmentVm.Descricao ?? "",
-                            Comments = attachmentVm.Comentarios ?? "",
+                            Description = attachmentVm.Description ?? "",
+                            Comments = attachmentVm.Comments ?? "",
                             AttachemntFileName = attachmentVm.FileName ?? "unknown_file",
                             Attachment = fileBytes,
                             FileExtension = attachmentVm.FileExtension ?? ".txt"
@@ -591,8 +591,8 @@ namespace Lenovo.NAT.Services.Logistic
                 {
                     // Verificar se o anexo tem dados válidos (metadados ou arquivo)
                     if (!string.IsNullOrEmpty(attachmentVm.CustomerPO) || 
-                        !string.IsNullOrEmpty(attachmentVm.Descricao) || 
-                        !string.IsNullOrEmpty(attachmentVm.Comentarios) ||
+                        !string.IsNullOrEmpty(attachmentVm.Description) || 
+                        !string.IsNullOrEmpty(attachmentVm.Comments) ||
                         !string.IsNullOrEmpty(attachmentVm.FileData))
                     {
                         Console.WriteLine($"[DEBUG] Dados do anexo recebidos:");
@@ -601,7 +601,7 @@ namespace Lenovo.NAT.Services.Logistic
                         Console.WriteLine($"  - ContentType: '{attachmentVm.ContentType}'");
                         Console.WriteLine($"  - FileSize: {attachmentVm.FileSize}");
                         Console.WriteLine($"  - CustomerPO: '{attachmentVm.CustomerPO}'");
-                        Console.WriteLine($"  - Descricao: '{attachmentVm.Descricao}'");
+                        Console.WriteLine($"  - Description: '{attachmentVm.Description}'");
                         Console.WriteLine($"  - FileData: {(string.IsNullOrEmpty(attachmentVm.FileData) ? "VAZIO" : $"{attachmentVm.FileData.Length} caracteres")}");
                         
                         // Converter Base64 para bytes se houver dados do arquivo
@@ -631,8 +631,8 @@ namespace Lenovo.NAT.Services.Logistic
                             CreatedOn = DateTime.UtcNow.AddHours(-3),
                             CreatedBy = model.CreatedBy ?? "System",
                             PONumber = attachmentVm.CustomerPO ?? "",
-                            Description = attachmentVm.Descricao ?? "",
-                            Comments = attachmentVm.Comentarios ?? "",
+                            Description = attachmentVm.Description ?? "",
+                            Comments = attachmentVm.Comments ?? "",
                             AttachemntFileName = attachmentVm.FileName ?? "unknown_file",
                             Attachment = fileBytes,
                             FileExtension = attachmentVm.FileExtension ?? ".txt"
